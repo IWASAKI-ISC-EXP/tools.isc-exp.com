@@ -99,14 +99,25 @@ export function ProjectPageContent() {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white">
-          {isProjectsPending
-            ? Array.from(
-                { length: 5 },
-                (_, index) => `skeleton-row-${index}`,
-              ).map((id) => <ProjectTableSkeletonRow key={id} />)
-            : projects?.map((project) => (
-                <ProjectsTableRow key={project.id} project={project} />
-              ))}
+          {isProjectsPending ? (
+            Array.from(
+              { length: 5 },
+              (_, index) => `skeleton-row-${index}`,
+            ).map((id) => <ProjectTableSkeletonRow key={id} />)
+          ) : projects?.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="py-6 text-center text-gray-400 text-sm"
+              >
+                案件がありません。
+              </TableCell>
+            </TableRow>
+          ) : (
+            projects?.map((project) => (
+              <ProjectsTableRow key={project.id} project={project} />
+            ))
+          )}
         </TableBody>
       </Table>
     </>
