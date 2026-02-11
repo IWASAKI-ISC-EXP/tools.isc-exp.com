@@ -36,15 +36,12 @@ export function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Avatar className="mr-5 h-10 w-10">
           <AvatarImage src={self.picture} />
-          <AvatarFallback>{self.firstName}</AvatarFallback>
+          <AvatarFallback>{self.name}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" className="w-56 font-normal font-sans">
-        <DropdownItem
-          label="氏名"
-          value={`${self.lastName} ${self.firstName}`}
-        />
+        <DropdownItem label="氏名" value={self.name} />
 
         <DropdownItem label="メールアドレス" value={self.email} />
 

@@ -15,7 +15,6 @@ import { RequestStatus } from "@/entities/request";
 import { AddProjectForm } from "@/features/project/components/add-project-form";
 import { useRequests } from "@/features/request/queries/use-requests";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
-import { formatUserName } from "@/lib/utils";
 import { useProjectsQuery } from "../queries/use-projects-query";
 import { UpdateProjectForm } from "./update-project-form";
 
@@ -100,9 +99,25 @@ export function ProjectPageContent() {
           </TableRow>
         </TableHeader>
         <TableBody className="bg-white">
-          {projects?.map((project) => (
-            <ProjectsTableRow key={project.id} project={project} />
-          ))}
+          {isProjectsPending ? (
+            Array.from(
+              { length: 5 },
+              (_, index) => `skeleton-row-${index}`,
+            ).map((id) => <ProjectTableSkeletonRow key={id} />)
+          ) : projects?.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="py-6 text-center text-gray-400 text-sm"
+              >
+                案件がありません。
+              </TableCell>
+            </TableRow>
+          ) : (
+            projects?.map((project) => (
+              <ProjectsTableRow key={project.id} project={project} />
+            ))
+          )}
         </TableBody>
       </Table>
     </>
@@ -122,14 +137,16 @@ function StatusCard({ title, count, label, skeleton }: StatusCardProps) {
       <CardHeader>
         <CardTitle className="text-sm">{title}</CardTitle>
       </CardHeader>
-      {skeleton ? (
-        <Skeleton className="h-10 w-40 rounded-md" />
-      ) : (
-        <CardContent className="text-2xl">
-          {count}
-          {label}
-        </CardContent>
-      )}
+      <CardContent className="text-2xl">
+        {skeleton ? (
+          <Skeleton className="h-10 w-20 rounded-md" />
+        ) : (
+          <>
+            {count}
+            {label}
+          </>
+        )}
+      </CardContent>
     </Card>
   );
 }
@@ -152,13 +169,29 @@ function ProjectsTableRow({ project }: { project: Project }) {
           {project.status === ProjectStatus.External ? "外部案件" : "EXP."}
         </Badge>
       </TableCell>
-      <TableCell className="py-4">{user ? formatUserName(user) : ""}</TableCell>
+      <TableCell className="py-4">
+        {user ? user.name : <Skeleton className="w-full py-4" />}
+      </TableCell>
       <TableCell className="py-4">
         {project.createdAt.toLocaleDateString("ja-JP")}
       </TableCell>
       <TableCell className="py-4">
         <UpdateProjectForm project={project} />
       </TableCell>
+    </TableRow>
+  );
+}
+
+function ProjectTableSkeletonRow() {
+  return (
+    <TableRow>
+      {Array.from({ length: 6 }, (_, index) => `skeleton-cell-${index}`).map(
+        (id) => (
+          <TableCell className="py-4" key={id}>
+            <Skeleton className="h-6 w-full rounded-md" />
+          </TableCell>
+        ),
+      )}
     </TableRow>
   );
 }

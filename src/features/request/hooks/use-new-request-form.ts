@@ -46,7 +46,8 @@ export function useNewRequestForm(onSuccess: () => void) {
   const selectedProject = projects.data?.find((p) => p.id === projectId);
 
   const submit = () => {
-    if (!canSubmit) return;
+    if (!canSubmit || createRequestMutation.isPending) return;
+
     createRequestMutation.mutate(
       { projectId, date, memo },
       {
@@ -57,6 +58,7 @@ export function useNewRequestForm(onSuccess: () => void) {
       },
     );
   };
+
   function formatDate(date: Date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");

@@ -44,7 +44,7 @@ export function MeRequestsTabs({ value, onChange, counts }: Props) {
             }
           }}
         >
-          <TabsList className="mt-4 gap-4 bg-transparent p-0">
+          <TabsList className="gap-4 bg-transparent p-0">
             {STATUSES.map(({ label, value }) => (
               <TabsTrigger
                 key={value}

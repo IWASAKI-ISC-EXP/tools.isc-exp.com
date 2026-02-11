@@ -22,12 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { urls } from "@/constants";
-import {
-  DepartmentId,
-  EnrollmentYear,
-  FirstName,
-  LastName,
-} from "@/entities/self";
+import { DepartmentId, EnrollmentYear, Name } from "@/entities/self";
 import { useDepartmentsQuery } from "@/features/user/queries/use-departments-query";
 import { registerSelf } from "@/features/user/register-self";
 import { useFormValue } from "@/hooks/useFormValue";
@@ -37,8 +32,7 @@ export function OnboardingForm() {
   const router = useRouter();
   const enrollmentYears = getAvailableEnrollmentYears();
   const { data: departments = [], isPending } = useDepartmentsQuery();
-  const [lastName, setLastName, lastNameError] = useFormValue("", LastName);
-  const [firstName, setFirstName, firstNameError] = useFormValue("", FirstName);
+  const [name, setName, nameError] = useFormValue("", Name);
   const [enrollmentYear, setYear, yearError] = useFormValue(0, EnrollmentYear);
   const [departmentId, setDepartment, departmentError] = useFormValue(
     "",
@@ -53,8 +47,7 @@ export function OnboardingForm() {
     setSubmitting(true);
 
     await registerSelf({
-      lastName,
-      firstName,
+      name,
       enrollmentYear,
       departmentId,
     });
@@ -72,23 +65,14 @@ export function OnboardingForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="mb-5 grid grid-cols-2 gap-2">
-                <NameBox
-                  text="姓"
-                  placeholder="山田"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  Errormsg={lastNameError}
-                />
-                <NameBox
-                  text="名"
-                  placeholder="太郎"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  Errormsg={firstNameError}
-                />
-              </div>
+            <div className="mb-5 flex flex-col gap-6">
+              <NameBox
+                text="名前"
+                placeholder="山田 太郎"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                errorMsg={nameError}
+              />
             </div>
             <div className="mb-5">
               <Label className="mb-2 text-muted-foreground">
@@ -144,11 +128,7 @@ export function OnboardingForm() {
               type="submit"
               className="w-full py-5"
               disabled={
-                isSubmitting ||
-                !lastName ||
-                !firstName ||
-                !enrollmentYear ||
-                !departmentId
+                isSubmitting || !name || !enrollmentYear || !departmentId
               }
             >
               <p> 登録してホームへ</p>
@@ -172,14 +152,14 @@ type NameBoxProps = {
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  Errormsg: string | null;
+  errorMsg: string | null;
 };
 function NameBox({
   text,
   placeholder,
   value,
   onChange,
-  Errormsg,
+  errorMsg,
 }: NameBoxProps) {
   return (
     <div>
@@ -188,7 +168,7 @@ function NameBox({
         <span className="text-red-500">*</span>
       </Label>
       <Input placeholder={placeholder} value={value} onChange={onChange} />
-      {Errormsg && <p className="mt-1 text-red-500 text-sm">{Errormsg}</p>}
+      {errorMsg && <p className="mt-1 text-red-500 text-sm">{errorMsg}</p>}
     </div>
   );
 }

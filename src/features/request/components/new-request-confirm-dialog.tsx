@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import type { useNewRequestForm } from "../hooks/use-new-request-form";
+
 export function NewRequestConfirmForm({
   open,
   onOpenChange,
@@ -22,7 +23,13 @@ export function NewRequestConfirmForm({
   form: ReturnType<typeof useNewRequestForm>;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (form.isPending) return;
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <div className="flex items-start gap-3">
@@ -34,14 +41,16 @@ export function NewRequestConfirmForm({
               </DialogTitle>
 
               <DialogDescription>
-                以下の内容で交通費を申請しますよろしいですか？
+                以下の内容で交通費を申請します。よろしいですか？
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (form.isPending) return;
             form.submit();
           }}
           className="space-y-4"
@@ -76,17 +85,23 @@ export function NewRequestConfirmForm({
           <DialogFooter className="flex gap-3">
             <DialogClose asChild>
               <Button
+                type="button"
                 variant="outline"
                 className="min-w-28"
                 onClick={form.reset}
+                disabled={form.isPending}
               >
                 キャンセル
               </Button>
             </DialogClose>
 
-            <Button type="submit" className="min-w-28">
-              <Save className="mr-2" />
-              送信する
+            <Button
+              type="submit"
+              className="min-w-28"
+              disabled={form.isPending}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {form.isPending ? "送信中..." : "送信する"}
             </Button>
           </DialogFooter>
         </form>

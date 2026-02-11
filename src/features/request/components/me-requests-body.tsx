@@ -25,7 +25,7 @@ export function MeRequestsBody() {
   };
 
   return (
-    <div className="p-6">
+    <div>
       <div className="flex items-center justify-between">
         <MeRequestsTabs value={status} onChange={setStatus} counts={counts} />
 

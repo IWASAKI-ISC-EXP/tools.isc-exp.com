@@ -19,7 +19,7 @@ import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-i
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
-import { cn, formatUserName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useRequests } from "../queries/use-request";
 
 type Props = {
@@ -235,7 +235,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
 
   const status = STATUS_MAP[r.status];
 
-  if (!user?.firstName.includes(keyword) && !user?.lastName.includes(keyword)) {
+  if (!user?.name.includes(keyword)) {
     return null;
   }
 
@@ -252,7 +252,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
         </Badge>
       </TableCell>
 
-      <TableCell>{user ? formatUserName(user) : ""}</TableCell>
+      <TableCell>{user ? user.name : ""}</TableCell>
 
       <TableCell className="whitespace-pre-line">
         {project?.name}
