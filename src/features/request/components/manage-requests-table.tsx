@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,6 +20,7 @@ import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import { cn } from "@/lib/utils";
 import { useRequests } from "../queries/use-request";
+import { RequestStatusBadge } from "./requests-status-badge";
 
 type Props = {
   value: string;
@@ -199,25 +199,6 @@ export function ManageRequestsTable() {
   );
 }
 
-const STATUS_MAP = {
-  [RequestStatus.Pending]: {
-    label: "承認待ち",
-    className: "bg-yellow-100 text-yellow-800",
-  },
-  [RequestStatus.Approved]: {
-    label: "精算待ち",
-    className: "bg-blue-100 text-blue-800",
-  },
-  [RequestStatus.Paid]: {
-    label: "精算済み",
-    className: "bg-green-100 text-green-800",
-  },
-  [RequestStatus.Rejected]: {
-    label: "拒否",
-    className: "bg-red-100 text-red-800",
-  },
-};
-
 type RequestRowProps = {
   r: Request;
   keyword: string;
@@ -233,8 +214,6 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       day: "numeric",
     });
 
-  const status = STATUS_MAP[r.status];
-
   if (!user?.name.includes(keyword)) {
     return null;
   }
@@ -242,14 +221,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
   return (
     <TableRow>
       <TableCell>
-        <Badge
-          className={cn(
-            "flex items-center gap-1 rounded-full px-3 py-1 text-sm",
-            status.className,
-          )}
-        >
-          {status.label}
-        </Badge>
+        <RequestStatusBadge status={r.status} />
       </TableCell>
 
       <TableCell>{user ? user.name : ""}</TableCell>
