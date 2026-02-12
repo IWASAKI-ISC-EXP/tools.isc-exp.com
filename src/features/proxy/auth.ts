@@ -58,5 +58,15 @@ export function authProxy(
     }
   }
 
+  // ユーザー管理ページにアクセスしようとした場合、権限をチェックする
+  if (req.nextUrl.pathname === urls.manageUsers) {
+    if (
+      !isCompleteOnboarding ||
+      !hasEnoughRole(selfLoginStatus.self.role, Role.Admin)
+    ) {
+      return NextResponse.redirect(new URL(urls.home, req.url));
+    }
+  }
+
   return NextResponse.next();
 }
