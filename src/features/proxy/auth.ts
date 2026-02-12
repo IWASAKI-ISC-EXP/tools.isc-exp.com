@@ -58,5 +58,11 @@ export function authProxy(
     }
   }
 
+  if (req.nextUrl.pathname === urls.meRequests) {
+    if (!isCompleteOnboarding || selfLoginStatus.self.role === Role.Teacher) {
+      return NextResponse.redirect(new URL(urls.home, req.url));
+    }
+  }
+
   return NextResponse.next();
 }

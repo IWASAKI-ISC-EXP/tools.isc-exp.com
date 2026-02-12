@@ -19,15 +19,16 @@ export default async function () {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <ListCard
-          title="申請一覧（個人）"
-          description="自分の交通費申請を確認・管理できます"
-          iconBg="bg-indigo-100"
-          icon={FileText}
-          iconClassName="text-indigo-600"
-          href={urls.meRequests}
-        />
-
+        {self.role !== Role.Teacher && (
+          <ListCard
+            title="申請一覧（個人）"
+            description="自分の交通費申請を確認・管理できます"
+            iconBg="bg-indigo-100"
+            icon={FileText}
+            iconClassName="text-indigo-600"
+            href={urls.meRequests}
+          />
+        )}
         {hasEnoughRole(self.role, Role.Leader) && (
           <>
             <ListCard
