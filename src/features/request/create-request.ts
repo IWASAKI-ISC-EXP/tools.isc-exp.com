@@ -28,6 +28,7 @@ export async function createRequest(
     requestedBy: self.uid,
     status: RequestStatus.Pending,
     date: firestore.Timestamp.fromDate(unsafeRequest.date),
+    createdAt: firestore.Timestamp.fromDate(unsafeRequest.createdAt),
   });
 
   const createdDocRef = await adminFirestore

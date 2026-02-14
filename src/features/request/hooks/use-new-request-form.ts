@@ -49,7 +49,7 @@ export function useNewRequestForm(onSuccess: () => void) {
     if (!canSubmit || createRequestMutation.isPending) return;
 
     createRequestMutation.mutate(
-      { projectId, date, memo },
+      { projectId, date, createdAt: new Date(), memo },
       {
         onSuccess: () => {
           onSuccess();
