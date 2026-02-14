@@ -181,9 +181,9 @@ export function ManageRequestsTable() {
               <TableHead>申請者</TableHead>
               <TableHead>案件名</TableHead>
               <TableHead>参加日時</TableHead>
+              <TableHead>申請日</TableHead>
               <TableHead>金額</TableHead>
               <TableHead>備考</TableHead>
-              <TableHead>申請日</TableHead>
               <TableHead>操作</TableHead>
             </TableRow>
           </TableHeader>
@@ -233,14 +233,12 @@ function RequestRow({ r, keyword }: RequestRowProps) {
 
       <TableCell>{formatDateJP(r.date)}</TableCell>
 
+      <TableCell>{formatDateJP(r.createdAt)}</TableCell>
+
       <TableCell>{project?.expense}円</TableCell>
 
       <TableCell className="whitespace-pre-line text-gray-600 text-sm">
         {r.memo}
-      </TableCell>
-
-      <TableCell className="text-gray-600 text-sm">
-        {formatDateJP(r.date)}
       </TableCell>
 
       <TableCell>

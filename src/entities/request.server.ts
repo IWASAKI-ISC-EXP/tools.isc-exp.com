@@ -11,6 +11,10 @@ export const RequestWithTimestamp = v.object({
     (data) => data instanceof firestore.Timestamp,
     "Expected firestore.Timestamp",
   ),
+  createdAt: v.custom<firestore.Timestamp>(
+    (data) => data instanceof firestore.Timestamp,
+    "Expected firestore.Timestamp",
+  ),
 });
 
 export const RequestWithTimestampTransformer = v.pipe(
@@ -18,5 +22,6 @@ export const RequestWithTimestampTransformer = v.pipe(
   v.transform((r) => ({
     ...r,
     date: r.date.toDate(),
+    createdAt: r.createdAt.toDate(),
   })),
 );

@@ -12,6 +12,7 @@ export const Request = v.object({
   projectId: v.string(),
   requestedBy: v.string(),
   date: v.date(),
+  createdAt: v.date(),
   memo: v.string(),
   status: v.enum(RequestStatus),
 });
