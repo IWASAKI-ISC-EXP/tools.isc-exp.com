@@ -74,13 +74,6 @@ export function NewRequestConfirmForm({
 
                 <TableRow>
                   <TableCell className="font-medium text-gray-600">
-                    申請日
-                  </TableCell>
-                  <TableCell>{form.formatDate(new Date())}</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium text-gray-600">
                     金額
                   </TableCell>
                   <TableCell>{form.expense} 円</TableCell>

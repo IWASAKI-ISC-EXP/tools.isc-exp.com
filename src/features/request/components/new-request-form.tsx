@@ -29,9 +29,9 @@ export function NewRequestForm({
         e.preventDefault();
         onSuccess();
       }}
-      className="space-y-2"
+      className="space-y-4"
     >
-      <div>
+      <div className="space-y-2">
         <FormLabel required>案件名</FormLabel>
         <Select
           value={form.projectId}
@@ -55,7 +55,7 @@ export function NewRequestForm({
         )}
       </div>
 
-      <div>
+      <div className="space-y-2">
         <FormLabel required>日程</FormLabel>
 
         <NewRequestFormCalendar value={form.date} onChange={form.setDate} />
@@ -65,16 +65,7 @@ export function NewRequestForm({
         )}
       </div>
 
-      <div>
-        <FormLabel required>申請日</FormLabel>
-        <Input
-          className="w-full bg-gray-100"
-          disabled
-          value={form.formatDate(new Date())}
-        />
-      </div>
-
-      <div>
+      <div className="space-y-2">
         <FormLabel required>金額（円）</FormLabel>
         <Input
           className="w-full bg-gray-100"
@@ -84,7 +75,7 @@ export function NewRequestForm({
         />
       </div>
 
-      <div>
+      <div className="space-y-2">
         <FormLabel>備考（任意）</FormLabel>
         <Textarea
           value={form.memo}

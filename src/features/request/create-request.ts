@@ -18,7 +18,7 @@ import { adminFirestore } from "@/firebase/admin";
  * @returns
  */
 export async function createRequest(
-  unsafeRequest: Omit<Request, "id" | "status" | "requestedBy">,
+  unsafeRequest: Omit<Request, "id" | "status" | "requestedBy" | "createdAt">,
 ): Promise<Request> {
   const self = await getSelf();
   if (!self) throw new UnauthorizedError();
@@ -28,7 +28,7 @@ export async function createRequest(
     requestedBy: self.uid,
     status: RequestStatus.Pending,
     date: firestore.Timestamp.fromDate(unsafeRequest.date),
-    createdAt: firestore.Timestamp.fromDate(unsafeRequest.createdAt),
+    createdAt: firestore.Timestamp.fromDate(new Date()),
   });
 
   const createdDocRef = await adminFirestore
