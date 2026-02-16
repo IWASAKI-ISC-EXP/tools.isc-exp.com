@@ -1,7 +1,7 @@
 "use client";
 
 import { RequestStatus } from "@/entities/request";
-import { useMeRequestTable } from "../hooks/use-new-request-form";
+import { useMeRequestTable } from "../hooks/use-me-request-table";
 import { MeRequestsTable } from "./me-requests-table";
 import { NewRequestButton } from "./new-request-button";
 import {

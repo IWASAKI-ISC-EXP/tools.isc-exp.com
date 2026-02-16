@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RequestStatus } from "@/entities/request";
-import type { RequestWithProject } from "../hooks/use-new-request-form";
+import type { RequestWithProject } from "../hooks/use-me-request-table";
 import { MeRequestsDeleteDialog } from "./me-requests-delete-dialog";
 import { RequestStatusBadge } from "./requests-status-badge";
 
