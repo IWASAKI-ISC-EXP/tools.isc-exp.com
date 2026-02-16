@@ -1,9 +1,13 @@
 "use client";
 
+import { RequestStatus } from "@/entities/request";
 import { useMeRequestTable } from "../hooks/use-new-request-form";
 import { MeRequestsTable } from "./me-requests-table";
-import { MeRequestsTabs } from "./me-requests-tabs";
 import { NewRequestButton } from "./new-request-button";
+import {
+  type RequestFilterStatus,
+  RequestFilterTabs,
+} from "./requests-filter-tabs";
 
 export function MeRequestsBody() {
   const {
@@ -16,18 +20,32 @@ export function MeRequestsBody() {
     deleteRequest,
   } = useMeRequestTable();
 
-  const counts = {
+  /**
+   * 🔹 enumベースで安全にcounts生成
+   */
+  const counts: Record<RequestFilterStatus, number> = {
     all: allData.length,
-    pending: allData.filter((d) => d.status === "pending").length,
-    approved: allData.filter((d) => d.status === "approved").length,
-    paid: allData.filter((d) => d.status === "paid").length,
-    rejected: allData.filter((d) => d.status === "rejected").length,
+    [RequestStatus.Pending]: allData.filter(
+      (d) => d.status === RequestStatus.Pending,
+    ).length,
+    [RequestStatus.Approved]: allData.filter(
+      (d) => d.status === RequestStatus.Approved,
+    ).length,
+    [RequestStatus.Paid]: allData.filter((d) => d.status === RequestStatus.Paid)
+      .length,
+    [RequestStatus.Rejected]: allData.filter(
+      (d) => d.status === RequestStatus.Rejected,
+    ).length,
   };
 
   return (
     <div>
       <div className="flex items-center justify-between">
-        <MeRequestsTabs value={status} onChange={setStatus} counts={counts} />
+        <RequestFilterTabs
+          value={status}
+          onChange={setStatus}
+          counts={counts}
+        />
 
         <NewRequestButton />
       </div>
