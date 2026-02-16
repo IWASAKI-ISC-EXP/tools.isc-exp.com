@@ -22,8 +22,8 @@ import { useRequests } from "../queries/use-request";
 import {
   type RequestFilterStatus,
   RequestFilterTabs,
-} from "./requests-filter-tabs";
-import { RequestStatusBadge } from "./requests-status-badge";
+} from "./request-status-tab";
+import { RequestStatusBadge } from "./request-status-badge";
 
 function ActionButtons({
   requestId,

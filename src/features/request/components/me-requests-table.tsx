@@ -13,7 +13,7 @@ import {
 import { RequestStatus } from "@/entities/request";
 import type { RequestWithProject } from "../hooks/use-me-request-table";
 import { MeRequestsDeleteDialog } from "./me-requests-delete-dialog";
-import { RequestStatusBadge } from "./requests-status-badge";
+import { RequestStatusBadge } from "./request-status-badge";
 
 type Props = {
   data: RequestWithProject[];

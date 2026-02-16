@@ -7,7 +7,7 @@ import { NewRequestButton } from "./new-request-button";
 import {
   type RequestFilterStatus,
   RequestFilterTabs,
-} from "./requests-filter-tabs";
+} from "./request-status-tab";
 
 export function MeRequestsBody() {
   const {

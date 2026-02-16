@@ -3,7 +3,7 @@ import { useProjectsQuery } from "@/features/project/queries/use-projects-query"
 import type { Request, RequestStatus } from "@/entities/request";
 import { useDeleteMyRequestByIdMutation } from "../mutations/use-delete-my-request-by-id-mutation";
 import { useMyRequestsQuery } from "../queries/use-my-requests-query";
-import { RequestFilterStatus } from "../components/requests-filter-tabs";
+import { RequestFilterStatus } from "../components/request-status-tab";
 
 export type RequestWithProject = Request & {
   projectName: string;
