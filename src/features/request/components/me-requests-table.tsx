@@ -49,6 +49,7 @@ export function MeRequestsTable({
             <TableHead className="px-2 py-2 text-left">ステータス</TableHead>
             <TableHead className="px-2 py-2 text-left">案件内容</TableHead>
             <TableHead className="px-2 py-2 text-left">参加日時</TableHead>
+            <TableHead className="px-2 py-2 text-left">申請日</TableHead>
             <TableHead className="px-2 py-2 text-right">金額</TableHead>
             <TableHead className="px-2 py-2 text-left">備考</TableHead>
             <TableHead className="px-2 py-2 text-left">削除</TableHead>
@@ -59,7 +60,7 @@ export function MeRequestsTable({
           {data.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="py-6 text-center text-gray-400 text-sm"
               >
                 申請がありません
@@ -81,6 +82,10 @@ export function MeRequestsTable({
 
                   <TableCell className="whitespace-nowrap py-4">
                     {formatDateJP(row.date)}
+                  </TableCell>
+
+                  <TableCell className="whitespace-nowrap py-4">
+                    {formatDateJP(row.createdAt)}
                   </TableCell>
 
                   <TableCell className="py-4 text-right">
