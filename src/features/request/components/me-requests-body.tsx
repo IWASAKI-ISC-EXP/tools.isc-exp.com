@@ -20,9 +20,7 @@ export function MeRequestsBody() {
     deleteRequest,
   } = useMeRequestTable();
 
-  /**
-   * 🔹 enumベースで安全にcounts生成
-   */
+
   const counts: Record<RequestFilterStatus, number> = {
     all: allData.length,
     [RequestStatus.Pending]: allData.filter(

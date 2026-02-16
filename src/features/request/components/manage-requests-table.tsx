@@ -92,7 +92,7 @@ export function ManageRequestsTable() {
 
   const { data } = useRequests();
 
-  // 🔹 件数（従来ロジックほぼそのまま + all追加）
+
   const statusCounts: Record<RequestFilterStatus, number> = {
     all: data?.length ?? 0,
     [RequestStatus.Pending]:
@@ -105,7 +105,6 @@ export function ManageRequestsTable() {
       data?.filter((r) => r.status === RequestStatus.Rejected).length ?? 0,
   };
 
-  // 🔹 all対応だけ追加
   const filteredData =
     filter === "all" ? data : data?.filter((r) => r.status === filter);
 
