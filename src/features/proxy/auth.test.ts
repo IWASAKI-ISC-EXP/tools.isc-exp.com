@@ -142,4 +142,53 @@ describe("認証・認可ミドルウェアのテスト", () => {
       expect(result).toEqual(NextResponse.next());
     });
   });
+
+  describe("ユーザー管理ページへのアクセス", () => {
+    const manageUserPageReq = createMockReqWithPathname(urls.manageUsers);
+
+    it("未ログインユーザーはログインページにリダイレクトされる", () => {
+      const result = authProxy(manageUserPageReq, createMockNotLoggedIn());
+      expect(result).toEqual(
+        createRedirectResponse(manageUserPageReq, urls.login),
+      );
+    });
+
+    it("オンボーディング未完了ユーザーはオンボーディングページにリダイレクトされる", () => {
+      const result = authProxy(
+        manageUserPageReq,
+        createMockIncompleteOnboarding(),
+      );
+      expect(result).toEqual(
+        createRedirectResponse(manageUserPageReq, urls.onboarding),
+      );
+    });
+
+    it("一般ユーザーはホームにリダイレクトされる", () => {
+      const result = authProxy(
+        manageUserPageReq,
+        createMockCompleteOnboarding({ role: Role.Member }),
+      );
+      expect(result).toEqual(
+        createRedirectResponse(manageUserPageReq, urls.home),
+      );
+    });
+
+    it("幹部はホームにリダイレクトされる", () => {
+      const result = authProxy(
+        manageUserPageReq,
+        createMockCompleteOnboarding({ role: Role.Leader }),
+      );
+      expect(result).toEqual(
+        createRedirectResponse(manageUserPageReq, urls.home),
+      );
+    });
+
+    it("管理者ユーザーはユーザー管理ページにアクセスできる", () => {
+      const result = authProxy(
+        manageUserPageReq,
+        createMockCompleteOnboarding({ role: Role.Admin }),
+      );
+      expect(result).toEqual(NextResponse.next());
+    });
+  });
 });

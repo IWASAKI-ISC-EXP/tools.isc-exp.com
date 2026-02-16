@@ -58,8 +58,12 @@ export function authProxy(
     }
   }
 
-  if (req.nextUrl.pathname === urls.meRequests) {
-    if (!isCompleteOnboarding || selfLoginStatus.self.role === Role.Teacher) {
+  // ユーザー管理ページにアクセスしようとした場合、権限をチェックする
+  if (req.nextUrl.pathname === urls.manageUsers) {
+    if (
+      !isCompleteOnboarding ||
+      !hasEnoughRole(selfLoginStatus.self.role, Role.Admin)
+    ) {
       return NextResponse.redirect(new URL(urls.home, req.url));
     }
   }
