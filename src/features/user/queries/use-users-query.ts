@@ -9,8 +9,8 @@ import { getUsers } from "../get-users";
  * Admin のみ呼び出し可能
  */
 export function useUsersQuery() {
-	return useQuery({
-		queryKey: queryKeys.users,
-		queryFn: getUsers,
-	});
+  return useQuery({
+    queryKey: queryKeys.users,
+    queryFn: getUsers,
+  });
 }
