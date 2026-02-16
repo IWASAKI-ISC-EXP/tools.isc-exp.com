@@ -21,8 +21,8 @@ import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import { useRequests } from "../queries/use-request";
 import { RequestStatusBadge } from "./request-status-badge";
 import {
- type RequestFilterStatus,
- RequestFilterTabs,
+  type RequestFilterStatus,
+  RequestFilterTabs,
 } from "./request-status-tab";
 
 function ActionButtons({
@@ -91,7 +91,6 @@ export function ManageRequestsTable() {
   );
 
   const { data } = useRequests();
-
 
   const statusCounts: Record<RequestFilterStatus, number> = {
     all: data?.length ?? 0,

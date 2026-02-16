@@ -20,7 +20,6 @@ export function MeRequestsBody() {
     deleteRequest,
   } = useMeRequestTable();
 
-
   const counts: Record<RequestFilterStatus, number> = {
     all: allData.length,
     [RequestStatus.Pending]: allData.filter(
