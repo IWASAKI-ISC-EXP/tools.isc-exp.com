@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -140,9 +141,49 @@ export function ManageRequestsTable() {
           </TableHeader>
 
           <TableBody>
-            {filteredData?.map((r) => (
-              <RequestRow key={r.id} r={r} keyword={keyword} />
-            ))}
+            {isLoading ? (
+              SKELETON_ROW_KEYS.map((key) => (
+                <TableRow key={key}>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-28" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-40" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-28" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredData?.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="py-6 text-center text-gray-500"
+                >
+                  データがありません
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredData?.map((r) => (
+                <RequestRow key={r.id} r={r} />
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
@@ -152,10 +193,9 @@ export function ManageRequestsTable() {
 
 type RequestRowProps = {
   r: Request;
-  keyword: string;
 };
 
-function RequestRow({ r, keyword }: RequestRowProps) {
+function RequestRow({ r }: RequestRowProps) {
   const { data: project } = useProjectByIdQuery(r.projectId);
   const { data: user } = useUserByIdQuery(r.requestedBy);
   const formatDateJP = (date: Date) =>
@@ -164,10 +204,6 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       month: "long",
       day: "numeric",
     });
-
-  if (!user?.name.includes(keyword)) {
-    return null;
-  }
 
   return (
     <TableRow>
