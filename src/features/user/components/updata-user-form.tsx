@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Settings } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,33 +20,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { queryKeys } from "@/constants";
 import { Role } from "@/entities/role";
+import type { User } from "@/entities/self";
 import { updateUserRoleById } from "../update-user-role-by-id";
 
-type UpdateUserFormProps = {
-  user: {
-    name: string;
-    enrollmentYear: number;
-    departmentId: string;
-    role: Role;
-    uid: string;
-  };
-};
-
-export function UpdateUserForm({ user }: UpdateUserFormProps) {
+export function UpdateUserForm({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [userRole, setUserRole] = useState(user.role);
   const roledeta = Role;
+  const mutation = useUpdateUserByIdMutation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
 
-    await updateUserRoleById(user.uid, userRole);
+    await mutation.mutateAsync({ id: user.uid, data: userRole });
     setIsOpen(false);
     setSubmitting(false);
-    user.role = userRole;
   }
 
   return (
@@ -103,4 +96,21 @@ export function UpdateUserForm({ user }: UpdateUserFormProps) {
       </DialogContent>
     </Dialog>
   );
+}
+
+export function useUpdateUserByIdMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Parameters<typeof updateUserRoleById>[1];
+    }) => updateUserRoleById(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.users });
+    },
+  });
 }
