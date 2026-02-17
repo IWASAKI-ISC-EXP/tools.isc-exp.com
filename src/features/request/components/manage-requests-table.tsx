@@ -86,9 +86,7 @@ function ActionButtons({
 
 export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
-  const [filter, setFilter] = useState<RequestFilterStatus>(
-    RequestStatus.Pending,
-  );
+  const [filter, setFilter] = useState<RequestFilterStatus>("all");
 
   const { data } = useRequests();
 

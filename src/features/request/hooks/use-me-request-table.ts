@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import type { Request } from "@/entities/request";
 import { useProjectsQuery } from "@/features/project/queries/use-projects-query";
-import { RequestFilterStatus } from "../components/request-status-tab";
+import type { RequestFilterStatus } from "../components/request-status-tab";
 import { useDeleteMyRequestByIdMutation } from "../mutations/use-delete-my-request-by-id-mutation";
 import { useMyRequestsQuery } from "../queries/use-my-requests-query";
 
