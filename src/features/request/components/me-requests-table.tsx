@@ -2,6 +2,7 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -29,9 +30,6 @@ export function MeRequestsTable({
   isDeleting,
 }: Props) {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-  if (loading) {
-    return <div className="mt-6">Loading...</div>;
-  }
   const targetRow = data.find((r) => r.id === deleteTargetId);
 
   const formatDateJP = (date: Date) => {
@@ -57,13 +55,18 @@ export function MeRequestsTable({
         </TableHeader>
 
         <TableBody className="bg-white">
-          {data.length === 0 ? (
+          {loading ? (
+            Array.from(
+              { length: 5 },
+              (_, index) => `skeleton-row-${index}`,
+            ).map((id) => <ProjectTableSkeletonRow key={id} />)
+          ) : data.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={7}
                 className="py-6 text-center text-gray-400 text-sm"
               >
-                申請がありません
+                申請がありません。
               </TableCell>
             </TableRow>
           ) : (
@@ -129,5 +132,19 @@ export function MeRequestsTable({
         }}
       />
     </div>
+  );
+}
+
+function ProjectTableSkeletonRow() {
+  return (
+    <TableRow>
+      {Array.from({ length: 7 }, (_, index) => `skeleton-cell-${index}`).map(
+        (id) => (
+          <TableCell className="py-6" key={id}>
+            <Skeleton className="h-6 w-full rounded-md" />
+          </TableCell>
+        ),
+      )}
+    </TableRow>
   );
 }
