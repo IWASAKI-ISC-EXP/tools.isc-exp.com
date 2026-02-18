@@ -1,4 +1,4 @@
-import { FileText, FolderKanban, UsersRound } from "lucide-react";
+import { FileText, FolderKanban, Settings, UsersRound } from "lucide-react";
 import { urls } from "@/constants";
 import { hasEnoughRole, Role } from "@/entities/role";
 import { ListCard } from "@/features/home/components/list-card";
@@ -49,6 +49,16 @@ export default async function () {
               href={urls.manageProjects}
             />
           </>
+        )}
+        {hasEnoughRole(self.role, Role.Admin) && (
+          <ListCard
+            title="ユーザー管理"
+            description="ユーザーの権限を管理できます"
+            iconBg="bg-amber-100"
+            icon={Settings}
+            iconClassName="text-amber-600"
+            href={urls.manageUsers}
+          />
         )}
       </div>
     </main>

@@ -15,10 +15,13 @@ const minimumRole = Role.Admin;
  * @param userId
  * @param role
  */
-export async function updateUserRoleById(
-  userId: string,
-  role: Role,
-): Promise<User | null> {
+export async function updateUserRoleById({
+  userId,
+  role,
+}: {
+  userId: string;
+  role: Role;
+}): Promise<User | null> {
   const self = await getSelf();
   if (!self) throw new UnauthorizedError();
   if (!hasEnoughRole(self.role, minimumRole)) throw new ForbiddenError();
