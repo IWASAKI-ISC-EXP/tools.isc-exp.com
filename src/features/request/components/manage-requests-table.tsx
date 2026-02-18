@@ -126,7 +126,7 @@ export function ManageRequestsTable() {
         </div>
       </div>
 
-      <div className="rounded-xl border bg-white shadow-sm">
+      <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="h-20 bg-gray-50">
