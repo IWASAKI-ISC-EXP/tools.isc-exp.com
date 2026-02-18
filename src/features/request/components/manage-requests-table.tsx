@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -12,47 +12,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { type Request, RequestStatus } from "@/entities/request";
 import { Role } from "@/entities/role";
 import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-id-query";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
-import { cn } from "@/lib/utils";
 import { useRequests } from "../queries/use-request";
+import { RequestStatusBadge } from "./request-status-badge";
+import {
+  type RequestFilterStatus,
+  RequestFilterTabs,
+} from "./request-status-tab";
 
-type Props = {
-  value: string;
-  label: string;
-  count: number;
-  active: boolean;
-};
-
-function StatusTab({ value, label, count, active }: Props) {
-  return (
-    <TabsTrigger
-      value={value}
-      className={cn(
-        "flex items-center gap-2 rounded-full px-4 py-2 text-sm",
-        "border transition-all",
-        active
-          ? "border-blue-600 bg-blue-600 text-white"
-          : "border-gray-300 bg-white text-gray-700 hover:bg-gray-100",
-      )}
-    >
-      <span>{label}</span>
-      <span
-        className={cn(
-          "rounded-full px-2 py-0.5 font-medium text-xs",
-          active ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600",
-        )}
-      >
-        {count}
-      </span>
-    </TabsTrigger>
-  );
-}
+const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
 
 function ActionButtons({
   requestId,
@@ -115,19 +88,24 @@ function ActionButtons({
 
 export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
-  const [filter, setFilter] = useState<string>(RequestStatus.Pending);
-  const { data } = useRequests();
-  // TODO: keyword で絞り込んだ時に表示件数と合わせる
-  const statusCounts = {
-    pending:
+  const [filter, setFilter] = useState<RequestFilterStatus>("all");
+
+  const { data, isLoading } = useRequests();
+
+  const statusCounts: Record<RequestFilterStatus, number> = {
+    all: data?.length ?? 0,
+    [RequestStatus.Pending]:
       data?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
-    approved:
+    [RequestStatus.Approved]:
       data?.filter((r) => r.status === RequestStatus.Approved).length ?? 0,
-    paid: data?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
-    rejected:
+    [RequestStatus.Paid]:
+      data?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
+    [RequestStatus.Rejected]:
       data?.filter((r) => r.status === RequestStatus.Rejected).length ?? 0,
   };
-  const filteredData = data?.filter((r) => r.status === filter);
+
+  const filteredData =
+    filter === "all" ? data : data?.filter((r) => r.status === filter);
 
   return (
     <div className="w-full space-y-4">
@@ -139,41 +117,16 @@ export function ManageRequestsTable() {
           className="w-full bg-white"
         />
 
-        <div>
-          <Tabs value={filter} onValueChange={setFilter}>
-            <TabsList className="mt-4 gap-4 bg-transparent p-0">
-              <StatusTab
-                value={RequestStatus.Pending}
-                label="承認待ち"
-                count={statusCounts?.pending ?? 0}
-                active={filter === RequestStatus.Pending}
-              />
-
-              <StatusTab
-                value={RequestStatus.Approved}
-                label="精算待ち"
-                count={statusCounts?.approved ?? 0}
-                active={filter === RequestStatus.Approved}
-              />
-
-              <StatusTab
-                value={RequestStatus.Paid}
-                label="精算済み"
-                count={statusCounts?.paid ?? 0}
-                active={filter === RequestStatus.Paid}
-              />
-
-              <StatusTab
-                value={RequestStatus.Rejected}
-                label="拒否"
-                count={statusCounts?.rejected ?? 0}
-                active={filter === RequestStatus.Rejected}
-              />
-            </TabsList>
-          </Tabs>
+        <div className="mt-4">
+          <RequestFilterTabs
+            value={filter}
+            onChange={setFilter}
+            counts={statusCounts}
+          />
         </div>
       </div>
-      <div className="rounded-xl border bg-white shadow-sm">
+
+      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow className="h-20 bg-gray-50">
@@ -181,42 +134,63 @@ export function ManageRequestsTable() {
               <TableHead>申請者</TableHead>
               <TableHead>案件名</TableHead>
               <TableHead>参加日時</TableHead>
+              <TableHead>申請日</TableHead>
               <TableHead>金額</TableHead>
               <TableHead>備考</TableHead>
-              <TableHead>申請日</TableHead>
               <TableHead>操作</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {filteredData?.map((r) => (
-              <RequestRow key={r.id} r={r} keyword={keyword} />
-            ))}
+            {isLoading ? (
+              SKELETON_ROW_KEYS.map((key) => (
+                <TableRow key={key}>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-28" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-40" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-28" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20" />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : filteredData?.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="py-6 text-center text-gray-500"
+                >
+                  データがありません
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredData?.map((r) => (
+                <RequestRow keyword={keyword} key={r.id} r={r} />
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
     </div>
   );
 }
-
-const STATUS_MAP = {
-  [RequestStatus.Pending]: {
-    label: "承認待ち",
-    className: "bg-yellow-100 text-yellow-800",
-  },
-  [RequestStatus.Approved]: {
-    label: "精算待ち",
-    className: "bg-blue-100 text-blue-800",
-  },
-  [RequestStatus.Paid]: {
-    label: "精算済み",
-    className: "bg-green-100 text-green-800",
-  },
-  [RequestStatus.Rejected]: {
-    label: "拒否",
-    className: "bg-red-100 text-red-800",
-  },
-};
 
 type RequestRowProps = {
   r: Request;
@@ -233,8 +207,6 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       day: "numeric",
     });
 
-  const status = STATUS_MAP[r.status];
-
   if (!user?.name.includes(keyword)) {
     return null;
   }
@@ -242,14 +214,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
   return (
     <TableRow>
       <TableCell>
-        <Badge
-          className={cn(
-            "flex items-center gap-1 rounded-full px-3 py-1 text-sm",
-            status.className,
-          )}
-        >
-          {status.label}
-        </Badge>
+        <RequestStatusBadge status={r.status} />
       </TableCell>
 
       <TableCell>{user ? user.name : ""}</TableCell>
@@ -261,14 +226,12 @@ function RequestRow({ r, keyword }: RequestRowProps) {
 
       <TableCell>{formatDateJP(r.date)}</TableCell>
 
+      <TableCell>{formatDateJP(r.createdAt)}</TableCell>
+
       <TableCell>{project?.expense}円</TableCell>
 
       <TableCell className="whitespace-pre-line text-gray-600 text-sm">
         {r.memo}
-      </TableCell>
-
-      <TableCell className="text-gray-600 text-sm">
-        {formatDateJP(r.date)}
       </TableCell>
 
       <TableCell>

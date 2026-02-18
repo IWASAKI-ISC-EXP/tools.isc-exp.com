@@ -51,7 +51,7 @@ export function OnboardingForm() {
       enrollmentYear,
       departmentId,
     });
-    router.push(urls.home);
+    window.location.href = urls.home;
   }
   return (
     <div className="flex min-h-screen items-center justify-center">

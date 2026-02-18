@@ -2,6 +2,7 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -11,9 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RequestStatus } from "@/entities/request";
-import type { RequestWithProject } from "../hooks/use-new-request-form";
+import type { RequestWithProject } from "../hooks/use-me-request-table";
 import { MeRequestsDeleteDialog } from "./me-requests-delete-dialog";
-import { RequestStatusBadge } from "./requests-status-badge";
+import { RequestStatusBadge } from "./request-status-badge";
 
 type Props = {
   data: RequestWithProject[];
@@ -29,9 +30,6 @@ export function MeRequestsTable({
   isDeleting,
 }: Props) {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-  if (loading) {
-    return <div className="mt-6">Loading...</div>;
-  }
   const targetRow = data.find((r) => r.id === deleteTargetId);
 
   const formatDateJP = (date: Date) => {
@@ -49,6 +47,7 @@ export function MeRequestsTable({
             <TableHead className="px-2 py-2 text-left">ステータス</TableHead>
             <TableHead className="px-2 py-2 text-left">案件内容</TableHead>
             <TableHead className="px-2 py-2 text-left">参加日時</TableHead>
+            <TableHead className="px-2 py-2 text-left">申請日</TableHead>
             <TableHead className="px-2 py-2 text-right">金額</TableHead>
             <TableHead className="px-2 py-2 text-left">備考</TableHead>
             <TableHead className="px-2 py-2 text-left">削除</TableHead>
@@ -56,13 +55,18 @@ export function MeRequestsTable({
         </TableHeader>
 
         <TableBody className="bg-white">
-          {data.length === 0 ? (
+          {loading ? (
+            Array.from(
+              { length: 5 },
+              (_, index) => `skeleton-row-${index}`,
+            ).map((id) => <ProjectTableSkeletonRow key={id} />)
+          ) : data.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="py-6 text-center text-gray-400 text-sm"
               >
-                申請がありません
+                申請がありません。
               </TableCell>
             </TableRow>
           ) : (
@@ -81,6 +85,10 @@ export function MeRequestsTable({
 
                   <TableCell className="whitespace-nowrap py-4">
                     {formatDateJP(row.date)}
+                  </TableCell>
+
+                  <TableCell className="whitespace-nowrap py-4">
+                    {formatDateJP(row.createdAt)}
                   </TableCell>
 
                   <TableCell className="py-4 text-right">
@@ -124,5 +132,19 @@ export function MeRequestsTable({
         }}
       />
     </div>
+  );
+}
+
+function ProjectTableSkeletonRow() {
+  return (
+    <TableRow>
+      {Array.from({ length: 7 }, (_, index) => `skeleton-cell-${index}`).map(
+        (id) => (
+          <TableCell className="py-6" key={id}>
+            <Skeleton className="h-6 w-full rounded-md" />
+          </TableCell>
+        ),
+      )}
+    </TableRow>
   );
 }

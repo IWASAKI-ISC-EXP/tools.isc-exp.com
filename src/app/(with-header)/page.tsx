@@ -1,4 +1,4 @@
-import { FileText, FolderKanban, UsersRound } from "lucide-react";
+import { FileText, FolderKanban, Settings, UsersRound } from "lucide-react";
 import { urls } from "@/constants";
 import { hasEnoughRole, Role } from "@/entities/role";
 import { ListCard } from "@/features/home/components/list-card";
@@ -19,15 +19,16 @@ export default async function () {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <ListCard
-          title="申請一覧（個人）"
-          description="自分の交通費申請を確認・管理できます"
-          iconBg="bg-indigo-100"
-          icon={FileText}
-          iconClassName="text-indigo-600"
-          href={urls.meRequests}
-        />
-
+        {self.role !== Role.Teacher && (
+          <ListCard
+            title="申請一覧（個人）"
+            description="自分の交通費申請を確認・管理できます"
+            iconBg="bg-indigo-100"
+            icon={FileText}
+            iconClassName="text-indigo-600"
+            href={urls.meRequests}
+          />
+        )}
         {hasEnoughRole(self.role, Role.Leader) && (
           <>
             <ListCard
@@ -48,6 +49,16 @@ export default async function () {
               href={urls.manageProjects}
             />
           </>
+        )}
+        {hasEnoughRole(self.role, Role.Admin) && (
+          <ListCard
+            title="ユーザー管理"
+            description="ユーザーの権限を管理できます"
+            iconBg="bg-amber-100"
+            icon={Settings}
+            iconClassName="text-amber-600"
+            href={urls.manageUsers}
+          />
         )}
       </div>
     </main>
