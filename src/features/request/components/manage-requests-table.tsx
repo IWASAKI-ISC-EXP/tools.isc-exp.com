@@ -180,7 +180,7 @@ export function ManageRequestsTable() {
               </TableRow>
             ) : (
               filteredData?.map((r) => (
-                <RequestRow key={r.id} r={r} />
+                <RequestRow keyword={keyword} key={r.id} r={r} />
               ))
             )}
           </TableBody>
@@ -192,9 +192,10 @@ export function ManageRequestsTable() {
 
 type RequestRowProps = {
   r: Request;
+  keyword: string;
 };
 
-function RequestRow({ r }: RequestRowProps) {
+function RequestRow({ r, keyword }: RequestRowProps) {
   const { data: project } = useProjectByIdQuery(r.projectId);
   const { data: user } = useUserByIdQuery(r.requestedBy);
   const formatDateJP = (date: Date) =>
@@ -203,6 +204,10 @@ function RequestRow({ r }: RequestRowProps) {
       month: "long",
       day: "numeric",
     });
+
+  if (!user?.name.includes(keyword)) {
+    return null;
+  }
 
   return (
     <TableRow>
