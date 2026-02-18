@@ -1,7 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,9 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { type Request, RequestStatus } from "@/entities/request";
 import { Role } from "@/entities/role";
+import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-id-query";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
@@ -180,7 +179,9 @@ export function ManageRequestsTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredData?.map((r) => <RequestRow key={r.id} r={r} />)
+              filteredData?.map((r) => (
+                <RequestRow key={r.id} r={r} />
+              ))
             )}
           </TableBody>
         </Table>
@@ -190,10 +191,12 @@ export function ManageRequestsTable() {
 }
 
 type RequestRowProps = {
-  r: RequestListItem;
+  r: Request;
 };
 
 function RequestRow({ r }: RequestRowProps) {
+  const { data: project } = useProjectByIdQuery(r.projectId);
+  const { data: user } = useUserByIdQuery(r.requestedBy);
   const formatDateJP = (date: Date) =>
     date.toLocaleDateString("ja-JP", {
       year: "numeric",
@@ -207,15 +210,18 @@ function RequestRow({ r }: RequestRowProps) {
         <RequestStatusBadge status={r.status} />
       </TableCell>
 
-      <TableCell>{r.userName}</TableCell>
+      <TableCell>{user ? user.name : ""}</TableCell>
 
-      <TableCell className="whitespace-pre-line">{r.projectName}</TableCell>
+      <TableCell className="whitespace-pre-line">
+        {project?.name}
+        <br />
+      </TableCell>
 
       <TableCell>{formatDateJP(r.date)}</TableCell>
 
       <TableCell>{formatDateJP(r.createdAt)}</TableCell>
 
-      <TableCell>{r.expense}円</TableCell>
+      <TableCell>{project?.expense}円</TableCell>
 
       <TableCell className="whitespace-pre-line text-gray-600 text-sm">
         {r.memo}
