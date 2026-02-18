@@ -1,6 +1,5 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Settings } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,10 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { queryKeys } from "@/constants";
 import { Role } from "@/entities/role";
 import type { User } from "@/entities/self";
-import { updateUserRoleById } from "../update-user-role-by-id";
+import { useUpdateUserByIdMutation } from "../mutations/use-update-user-mutation";
 
 export function UpdateUserForm({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +34,7 @@ export function UpdateUserForm({ user }: { user: User }) {
     e.preventDefault();
     setSubmitting(true);
 
-    await mutation.mutateAsync({ id: user.uid, data: userRole });
+    await mutation.mutateAsync({ userId: user.uid, role: userRole });
     setIsOpen(false);
     setSubmitting(false);
   }
@@ -96,21 +94,4 @@ export function UpdateUserForm({ user }: { user: User }) {
       </DialogContent>
     </Dialog>
   );
-}
-
-export function useUpdateUserByIdMutation() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Parameters<typeof updateUserRoleById>[1];
-    }) => updateUserRoleById(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users });
-    },
-  });
 }
