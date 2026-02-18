@@ -25,6 +25,8 @@ import {
   RequestFilterTabs,
 } from "./request-status-tab";
 
+const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
+
 function ActionButtons({
   requestId,
   status,
@@ -88,7 +90,7 @@ export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
   const [filter, setFilter] = useState<RequestFilterStatus>("all");
 
-  const { data } = useRequests();
+  const { data, isLoading } = useRequests();
 
   const statusCounts: Record<RequestFilterStatus, number> = {
     all: data?.length ?? 0,
