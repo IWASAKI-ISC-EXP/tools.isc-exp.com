@@ -2,6 +2,11 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -100,15 +105,25 @@ export function MeRequestsTable({
                   </TableCell>
 
                   <TableCell className="py-4">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => setDeleteTargetId(row.id)}
-                      disabled={!canDelete || isDeleting}
-                      className="text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="link"
+                          onClick={() => setDeleteTargetId(row.id)}
+                          disabled={!canDelete || isDeleting}
+                          className="text-red-600 hover:text-red-700 disabled:opacity-40"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </HoverCardTrigger>
+                      {!canDelete && (
+                        <HoverCardContent className="flex items-center gap-1">
+                          <RequestStatusBadge status={row.status} />
+                          <span>は削除できません</span>
+                        </HoverCardContent>
+                      )}
+                    </HoverCard>
                   </TableCell>
                 </TableRow>
               );
