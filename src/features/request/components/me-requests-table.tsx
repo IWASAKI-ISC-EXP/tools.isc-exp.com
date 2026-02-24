@@ -46,8 +46,8 @@ export function MeRequestsTable({
           <TableRow>
             <TableHead className="px-2 py-2 text-left">ステータス</TableHead>
             <TableHead className="px-2 py-2 text-left">案件内容</TableHead>
-            <TableHead className="px-2 py-2 text-left">参加日時</TableHead>
-            <TableHead className="px-2 py-2 text-left">申請日</TableHead>
+            <TableHead className="px-2 py-2 text-left">参加日</TableHead>
+            <TableHead className="px-2 py-2 text-left">申請日時</TableHead>
             <TableHead className="px-2 py-2 text-right">金額</TableHead>
             <TableHead className="px-2 py-2 text-left">備考</TableHead>
             <TableHead className="px-2 py-2 text-left">削除</TableHead>

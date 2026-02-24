@@ -133,8 +133,8 @@ export function ManageRequestsTable() {
               <TableHead>ステータス</TableHead>
               <TableHead>申請者</TableHead>
               <TableHead>案件名</TableHead>
-              <TableHead>参加日時</TableHead>
-              <TableHead>申請日</TableHead>
+              <TableHead>参加日</TableHead>
+              <TableHead>申請日時</TableHead>
               <TableHead>金額</TableHead>
               <TableHead>備考</TableHead>
               <TableHead>操作</TableHead>
