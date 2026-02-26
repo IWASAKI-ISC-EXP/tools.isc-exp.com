@@ -44,11 +44,11 @@ export function ManageUserPageContent() {
       <Table className="mt-4 overflow-hidden rounded-md bg-white">
         <TableHeader className="bg-gray-50">
           <TableRow>
-            <TableHead>名前</TableHead>
-            <TableHead>入学年度</TableHead>
-            <TableHead>学科</TableHead>
-            <TableHead>現在の権限</TableHead>
-            <TableHead>操作</TableHead>
+            <TableHead className="w-40">名前</TableHead>
+            <TableHead className="w-24">入学年度</TableHead>
+            <TableHead className="w-40">学科</TableHead>
+            <TableHead className="w-24">現在の権限</TableHead>
+            <TableHead className="w-24">操作</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
