@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { Request } from "@/entities/request";
+import { type Request, RequestStatus } from "@/entities/request";
 import { useProjectsQuery } from "@/features/project/queries/use-projects-query";
 import type { RequestFilterStatus } from "../components/request-status-tab";
 import { useDeleteMyRequestByIdMutation } from "../mutations/use-delete-my-request-by-id-mutation";
@@ -11,7 +11,9 @@ export type RequestWithProject = Request & {
 };
 
 export function useMeRequestTable() {
-  const [status, setStatus] = useState<RequestFilterStatus>("all");
+  const [status, setStatus] = useState<RequestFilterStatus>(
+    RequestStatus.Pending,
+  );
 
   const requestsQuery = useMyRequestsQuery();
   const projectsQuery = useProjectsQuery();
