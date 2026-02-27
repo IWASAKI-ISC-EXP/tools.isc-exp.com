@@ -7,7 +7,6 @@ const roleLabelMap: Record<Role, string> = {
   [Role.Admin]: "管理者",
 };
 
-export function Rolenamejp(role: Role | null | undefined) {
-  if (!role) return "不明";
+export function roleNameJp(role: Role) {
   return roleLabelMap[role];
 }
