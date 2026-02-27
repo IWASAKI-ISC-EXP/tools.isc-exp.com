@@ -19,10 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Role } from "@/entities/role";
+import { Role, RoleSchema } from "@/entities/role";
 import type { User } from "@/entities/self";
+import { Rolenamejp } from "@/lib/role-name-jp";
 import { useUpdateUserByIdMutation } from "../mutations/use-update-user-mutation";
-
 export function UpdateUserForm({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
@@ -65,7 +65,7 @@ export function UpdateUserForm({ user }: { user: User }) {
                 {roledeta &&
                   Object.values(Role).map((role) => (
                     <SelectItem value={role} key={role}>
-                      {role}
+                      {Rolenamejp(role)}
                     </SelectItem>
                   ))}
               </SelectContent>
