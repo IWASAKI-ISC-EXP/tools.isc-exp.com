@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Role, RoleSchema } from "@/entities/role";
+import { Role } from "@/entities/role";
 import type { User } from "@/entities/self";
 import { roleNameJp } from "@/lib/role-name-jp";
 import { useUpdateUserByIdMutation } from "../mutations/use-update-user-mutation";
