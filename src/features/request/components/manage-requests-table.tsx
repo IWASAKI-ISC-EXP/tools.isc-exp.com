@@ -1,7 +1,18 @@
 "use client";
 
+import { CircleAlert, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -30,9 +41,15 @@ const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
 function ActionButtons({
   requestId,
   status,
+  requesterName,
+  projectName,
+  projectEcpense,
 }: {
   requestId: string;
   status: RequestStatus;
+  requesterName: string;
+  projectName?: string;
+  projectEcpense?: number;
 }) {
   const { mutate, isPending } = useUpdateRequestStatusByIdMutation();
   const self = useSelf();
@@ -71,15 +88,87 @@ function ActionButtons({
 
   if (status === RequestStatus.Approved) {
     return (
-      <div className="flex justify-end">
-        <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isPending || !isTeacherOrHigher}
-          onClick={() => handleUpdate(RequestStatus.Paid)}
-        >
-          精算
-        </Button>
-      </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className="bg-indigo-600 hover:bg-indigo-700"
+            disabled={isPending || !isTeacherOrHigher}
+          >
+            精算
+          </Button>
+        </DialogTrigger>
+        <form>
+          <DialogContent
+            className="sm:max-w-sm"
+            onInteractOutside={(e) => isPending && e.preventDefault()}
+            onEscapeKeyDown={(e) => isPending && e.preventDefault()}
+          >
+            <DialogHeader>
+              <div className="flex items-start gap-3">
+                <CircleAlert className="mt-1 h-10 w-10" />
+                <div>
+                  <DialogTitle className="font-semibold text-lg">
+                    精算確認
+                  </DialogTitle>
+
+                  <DialogDescription>
+                    交通費を精算します。よろしいですか？
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <Table className="text-sm">
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="w-32 font-medium text-gray-600">
+                      案件名
+                    </TableCell>
+                    <TableCell>{projectName}</TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell className="font-medium text-gray-600">
+                      申請者
+                    </TableCell>
+                    <TableCell>{requesterName}</TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell className="font-medium text-gray-600">
+                      金額
+                    </TableCell>
+                    <TableCell>{projectEcpense} 円</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="min-w-28"
+                  disabled={isPending}
+                >
+                  キャンセル
+                </Button>
+              </DialogClose>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  handleUpdate(RequestStatus.Paid);
+                }}
+                disabled={isPending}
+                className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                精算する
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </form>
+      </Dialog>
     );
   }
 
@@ -237,7 +326,13 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       </TableCell>
 
       <TableCell>
-        <ActionButtons requestId={r.id} status={r.status} />
+        <ActionButtons
+          requestId={r.id}
+          status={r.status}
+          requesterName={user?.name || ""}
+          projectName={project?.name || ""}
+          projectEcpense={project?.expense}
+        />
       </TableCell>
     </TableRow>
   );
