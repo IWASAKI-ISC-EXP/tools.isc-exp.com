@@ -43,13 +43,13 @@ function ActionButtons({
   status,
   requesterName,
   projectName,
-  projectEcpense,
+  projectExpense,
 }: {
   requestId: string;
   status: RequestStatus;
   requesterName: string;
   projectName?: string;
-  projectEcpense?: number;
+  projectExpense?: number;
 }) {
   const { mutate, isPending } = useUpdateRequestStatusByIdMutation();
   const self = useSelf();
@@ -97,77 +97,76 @@ function ActionButtons({
             精算
           </Button>
         </DialogTrigger>
-        <form>
-          <DialogContent
-            className="sm:max-w-sm"
-            onInteractOutside={(e) => isPending && e.preventDefault()}
-            onEscapeKeyDown={(e) => isPending && e.preventDefault()}
-          >
-            <DialogHeader>
-              <div className="flex items-start gap-3">
-                <CircleAlert className="mt-1 h-10 w-10" />
-                <div>
-                  <DialogTitle className="font-semibold text-lg">
-                    精算確認
-                  </DialogTitle>
 
-                  <DialogDescription>
-                    交通費を精算します。よろしいですか？
-                  </DialogDescription>
-                </div>
+        <DialogContent
+          className="sm:max-w-sm"
+          onInteractOutside={(e) => isPending && e.preventDefault()}
+          onEscapeKeyDown={(e) => isPending && e.preventDefault()}
+        >
+          <DialogHeader>
+            <div className="flex items-start gap-3">
+              <CircleAlert className="mt-1 h-10 w-10" />
+              <div>
+                <DialogTitle className="font-semibold text-lg">
+                  精算確認
+                </DialogTitle>
+
+                <DialogDescription>
+                  交通費を精算します。よろしいですか？
+                </DialogDescription>
               </div>
-            </DialogHeader>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <Table className="text-sm">
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="w-32 font-medium text-gray-600">
-                      案件名
-                    </TableCell>
-                    <TableCell>{projectName}</TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell className="font-medium text-gray-600">
-                      申請者
-                    </TableCell>
-                    <TableCell>{requesterName}</TableCell>
-                  </TableRow>
-
-                  <TableRow>
-                    <TableCell className="font-medium text-gray-600">
-                      金額
-                    </TableCell>
-                    <TableCell>{projectEcpense} 円</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
             </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="min-w-28"
-                  disabled={isPending}
-                >
-                  キャンセル
-                </Button>
-              </DialogClose>
+          </DialogHeader>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <Table className="text-sm">
+              <TableBody>
+                <TableRow>
+                  <TableCell className="w-32 font-medium text-gray-600">
+                    案件名
+                  </TableCell>
+                  <TableCell>{projectName}</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium text-gray-600">
+                    申請者
+                  </TableCell>
+                  <TableCell>{requesterName}</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell className="font-medium text-gray-600">
+                    金額
+                  </TableCell>
+                  <TableCell>{projectExpense} 円</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
               <Button
+                type="button"
                 variant="outline"
-                onClick={() => {
-                  handleUpdate(RequestStatus.Paid);
-                }}
+                className="min-w-28"
                 disabled={isPending}
-                className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
               >
-                <Save className="mr-2 h-4 w-4" />
-                精算する
+                キャンセル
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </form>
+            </DialogClose>
+            <Button
+              variant="outline"
+              onClick={() => {
+                handleUpdate(RequestStatus.Paid);
+              }}
+              disabled={isPending}
+              className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+            >
+              <Save className="mr-2 h-4 w-4" />
+              精算する
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     );
   }
@@ -331,7 +330,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
           status={r.status}
           requesterName={user?.name || ""}
           projectName={project?.name || ""}
-          projectEcpense={project?.expense}
+          projectExpense={project?.expense}
         />
       </TableCell>
     </TableRow>
