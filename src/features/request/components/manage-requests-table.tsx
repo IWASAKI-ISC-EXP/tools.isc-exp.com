@@ -51,12 +51,15 @@ function ActionButtons({
   projectName?: string;
   projectExpense?: number;
 }) {
-  const { mutate, isPending } = useUpdateRequestStatusByIdMutation();
+  const { mutate } = useUpdateRequestStatusByIdMutation();
+  const [isSubmitting, setSubmitting] = useState(false);
+
   const self = useSelf();
 
   const isTeacherOrHigher = self?.role === Role.Teacher;
 
   const handleUpdate = (nextStatus: RequestStatus) => {
+    setSubmitting(true);
     mutate({
       id: requestId,
       status: nextStatus,
@@ -69,7 +72,7 @@ function ActionButtons({
         <Button
           variant="outline"
           className="text-red-600"
-          disabled={isPending}
+          disabled={isSubmitting}
           onClick={() => handleUpdate(RequestStatus.Rejected)}
         >
           却下
@@ -77,7 +80,7 @@ function ActionButtons({
 
         <Button
           className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isPending}
+          disabled={isSubmitting}
           onClick={() => handleUpdate(RequestStatus.Approved)}
         >
           承認
@@ -92,7 +95,7 @@ function ActionButtons({
         <DialogTrigger asChild>
           <Button
             className="bg-indigo-600 hover:bg-indigo-700"
-            disabled={isPending || !isTeacherOrHigher}
+            disabled={isSubmitting || !isTeacherOrHigher}
           >
             精算
           </Button>
@@ -100,8 +103,8 @@ function ActionButtons({
 
         <DialogContent
           className="sm:max-w-sm"
-          onInteractOutside={(e) => isPending && e.preventDefault()}
-          onEscapeKeyDown={(e) => isPending && e.preventDefault()}
+          onInteractOutside={(e) => isSubmitting && e.preventDefault()}
+          onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
         >
           <DialogHeader>
             <div className="flex items-start gap-3">
@@ -149,7 +152,7 @@ function ActionButtons({
                 type="button"
                 variant="outline"
                 className="min-w-28"
-                disabled={isPending}
+                disabled={isSubmitting}
               >
                 キャンセル
               </Button>
@@ -159,7 +162,7 @@ function ActionButtons({
               onClick={() => {
                 handleUpdate(RequestStatus.Paid);
               }}
-              disabled={isPending}
+              disabled={isSubmitting}
               className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
             >
               <Save className="mr-2 h-4 w-4" />
