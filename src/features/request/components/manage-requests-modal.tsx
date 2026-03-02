@@ -1,4 +1,4 @@
-import { CircleAlert, Save } from "lucide-react";
+import { CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,9 +22,11 @@ type ManageRequestsModalProps = {
   handleUpdate: (requestStatus: RequestStatus) => void;
   targetRequestStatus: RequestStatus;
   buttontext: string;
+  buttonicon: React.ReactNode;
   dialogtitle: string;
   dialogdescription: string;
   buttonclassname: string;
+  confirmButtonClassname: string;
 };
 
 export function ManageRequestsModal({
@@ -36,9 +38,11 @@ export function ManageRequestsModal({
   handleUpdate,
   targetRequestStatus,
   buttontext,
+  buttonicon,
   dialogtitle,
   dialogdescription,
   buttonclassname,
+  confirmButtonClassname,
 }: ManageRequestsModalProps) {
   return (
     <Dialog>
@@ -112,9 +116,9 @@ export function ManageRequestsModal({
               handleUpdate(targetRequestStatus);
             }}
             disabled={isSubmitting}
-            className="bg-indigo-600 px-6 text-white hover:bg-indigo-700 hover:text-white"
+            className={confirmButtonClassname}
           >
-            <Save className="mr-2 h-4 w-4" />
+            {buttonicon}
             {buttontext}
           </Button>
         </DialogFooter>

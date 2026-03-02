@@ -1,5 +1,6 @@
 "use client";
 
+import { Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -66,10 +67,12 @@ function ActionButtons({
           isTeacherOrHigher={!isTeacherOrHigher || isTeacherOrHigher}
           handleUpdate={handleUpdate}
           targetRequestStatus={RequestStatus.Rejected}
+          buttonicon={<Trash2 className="mr-2 h-4 w-4" />}
           buttontext="却下"
           buttonclassname="text-red-600 bg-white hover:text-red-700"
           dialogtitle="却下確認"
           dialogdescription="申請を却下します。よろしいですか？"
+          confirmButtonClassname="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
         />
 
         <ManageRequestsModal
@@ -80,10 +83,12 @@ function ActionButtons({
           isTeacherOrHigher={!isTeacherOrHigher || isTeacherOrHigher}
           handleUpdate={handleUpdate}
           targetRequestStatus={RequestStatus.Approved}
+          buttonicon={<Save className="mr-2 h-4 w-4" />}
           buttontext="承認"
           buttonclassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
           dialogtitle="承認確認"
           dialogdescription="申請を承認します。よろしいですか？"
+          confirmButtonClassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
         />
       </div>
     );
@@ -99,10 +104,12 @@ function ActionButtons({
         isTeacherOrHigher={isTeacherOrHigher}
         handleUpdate={handleUpdate}
         targetRequestStatus={RequestStatus.Paid}
+        buttonicon={<Save className="mr-2 h-4 w-4" />}
         buttontext="精算"
         buttonclassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
         dialogtitle="精算確認"
         dialogdescription="交通費を生産します。よろしいですか？"
+        confirmButtonClassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
       />
     );
   }
