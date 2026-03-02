@@ -7,6 +7,6 @@ const roleLabelMap: Record<Role, string> = {
   [Role.Admin]: "管理者",
 };
 
-export function roleNameJp(role: Role) {
+export function convertRoleJapanese(role: Role) {
   return roleLabelMap[role];
 }
