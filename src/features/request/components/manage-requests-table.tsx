@@ -1,18 +1,6 @@
 "use client";
 
-import { CircleAlert, Save } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -30,6 +18,7 @@ import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import { useRequests } from "../queries/use-request";
+import { ManageRequestsModal } from "./manage-requests-modal";
 import { RequestStatusBadge } from "./request-status-badge";
 import {
   type RequestFilterStatus,
@@ -69,108 +58,52 @@ function ActionButtons({
   if (status === RequestStatus.Pending) {
     return (
       <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          className="text-red-600"
-          disabled={isSubmitting}
-          onClick={() => handleUpdate(RequestStatus.Rejected)}
-        >
-          却下
-        </Button>
+        <ManageRequestsModal
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
+          isSubmitting={isSubmitting}
+          isTeacherOrHigher={!isTeacherOrHigher || isTeacherOrHigher}
+          handleUpdate={handleUpdate}
+          targetRequestStatus={RequestStatus.Rejected}
+          buttontext="却下"
+          buttonclassname="text-red-600 bg-white hover:text-red-700"
+          dialogtitle="却下確認"
+          dialogdescription="申請を却下します。よろしいですか？"
+        />
 
-        <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isSubmitting}
-          onClick={() => handleUpdate(RequestStatus.Approved)}
-        >
-          承認
-        </Button>
+        <ManageRequestsModal
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
+          isSubmitting={isSubmitting}
+          isTeacherOrHigher={!isTeacherOrHigher || isTeacherOrHigher}
+          handleUpdate={handleUpdate}
+          targetRequestStatus={RequestStatus.Approved}
+          buttontext="承認"
+          buttonclassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+          dialogtitle="承認確認"
+          dialogdescription="申請を承認します。よろしいですか？"
+        />
       </div>
     );
   }
 
   if (status === RequestStatus.Approved) {
     return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            className="bg-indigo-600 hover:bg-indigo-700"
-            disabled={isSubmitting || !isTeacherOrHigher}
-          >
-            精算
-          </Button>
-        </DialogTrigger>
-
-        <DialogContent
-          className="sm:max-w-sm"
-          onInteractOutside={(e) => isSubmitting && e.preventDefault()}
-          onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
-        >
-          <DialogHeader>
-            <div className="flex items-start gap-3">
-              <CircleAlert className="mt-1 h-10 w-10" />
-              <div>
-                <DialogTitle className="font-semibold text-lg">
-                  精算確認
-                </DialogTitle>
-
-                <DialogDescription>
-                  交通費を精算します。よろしいですか？
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <Table className="text-sm">
-              <TableBody>
-                <TableRow>
-                  <TableCell className="w-32 font-medium text-gray-600">
-                    案件名
-                  </TableCell>
-                  <TableCell>{projectName}</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium text-gray-600">
-                    申請者
-                  </TableCell>
-                  <TableCell>{requesterName}</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium text-gray-600">
-                    金額
-                  </TableCell>
-                  <TableCell>{projectExpense} 円</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="min-w-28"
-                disabled={isSubmitting}
-              >
-                キャンセル
-              </Button>
-            </DialogClose>
-            <Button
-              variant="outline"
-              onClick={() => {
-                handleUpdate(RequestStatus.Paid);
-              }}
-              disabled={isSubmitting}
-              className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              精算する
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ManageRequestsModal
+        projectName={projectName || ""}
+        requesterName={requesterName}
+        projectExpense={projectExpense || 0}
+        isSubmitting={isSubmitting}
+        isTeacherOrHigher={isTeacherOrHigher}
+        handleUpdate={handleUpdate}
+        targetRequestStatus={RequestStatus.Paid}
+        buttontext="精算"
+        buttonclassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+        dialogtitle="精算確認"
+        dialogdescription="交通費を生産します。よろしいですか？"
+      />
     );
   }
 
