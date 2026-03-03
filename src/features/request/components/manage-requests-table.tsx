@@ -44,23 +44,40 @@ function ActionButtons({
   requesterName,
   projectName,
   projectExpense,
+  onOptimisticUpdate,
 }: {
   requestId: string;
   status: RequestStatus;
   requesterName: string;
   projectName?: string;
   projectExpense?: number;
+  onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 }) {
-  const { mutate, isPending } = useUpdateRequestStatusByIdMutation();
+  const { mutate } = useUpdateRequestStatusByIdMutation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const self = useSelf();
 
-  const isTeacherOrHigher = self?.role === Role.Teacher;
+  const isTeacher = self?.role === Role.Teacher;
 
   const handleUpdate = (nextStatus: RequestStatus) => {
-    mutate({
-      id: requestId,
-      status: nextStatus,
-    });
+    const prevStatus = status;
+    setIsSubmitting(true);
+    onOptimisticUpdate(requestId, nextStatus);
+    mutate(
+      {
+        id: requestId,
+        status: nextStatus,
+      },
+      {
+        onError() {
+          onOptimisticUpdate(requestId, prevStatus);
+        },
+        onSettled() {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
 
   if (status === RequestStatus.Pending) {
@@ -69,7 +86,7 @@ function ActionButtons({
         <Button
           variant="outline"
           className="text-red-600"
-          disabled={isPending}
+          disabled={isSubmitting}
           onClick={() => handleUpdate(RequestStatus.Rejected)}
         >
           却下
@@ -77,7 +94,7 @@ function ActionButtons({
 
         <Button
           className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isPending}
+          disabled={isSubmitting}
           onClick={() => handleUpdate(RequestStatus.Approved)}
         >
           承認
@@ -92,7 +109,7 @@ function ActionButtons({
         <DialogTrigger asChild>
           <Button
             className="bg-indigo-600 hover:bg-indigo-700"
-            disabled={isPending || !isTeacherOrHigher}
+            disabled={isSubmitting || !isTeacher}
           >
             精算
           </Button>
@@ -100,8 +117,8 @@ function ActionButtons({
 
         <DialogContent
           className="sm:max-w-sm"
-          onInteractOutside={(e) => isPending && e.preventDefault()}
-          onEscapeKeyDown={(e) => isPending && e.preventDefault()}
+          onInteractOutside={(e) => isSubmitting && e.preventDefault()}
+          onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
         >
           <DialogHeader>
             <div className="flex items-start gap-3">
@@ -149,7 +166,7 @@ function ActionButtons({
                 type="button"
                 variant="outline"
                 className="min-w-28"
-                disabled={isPending}
+                disabled={isSubmitting}
               >
                 キャンセル
               </Button>
@@ -159,7 +176,7 @@ function ActionButtons({
               onClick={() => {
                 handleUpdate(RequestStatus.Paid);
               }}
-              disabled={isPending}
+              disabled={isSubmitting}
               className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
             >
               <Save className="mr-2 h-4 w-4" />
@@ -180,22 +197,45 @@ export function ManageRequestsTable() {
     RequestStatus.Pending,
   );
 
+  const [optimisticStatusMap, setOptimisticStatusMap] = useState<
+    Record<string, RequestStatus>
+  >({});
+
   const { data, isLoading } = useRequests();
 
+  const mergedData = data?.map((r) => ({
+    ...r,
+    status: optimisticStatusMap[r.id] ?? r.status,
+  }));
+
+  const handleOptimisticUpdate = (
+    requestId: string,
+    nextStatus: RequestStatus,
+  ) => {
+    setOptimisticStatusMap((prev) => ({
+      ...prev,
+      [requestId]: nextStatus,
+    }));
+  };
+
   const statusCounts: Record<RequestFilterStatus, number> = {
-    all: data?.length ?? 0,
+    all: mergedData?.length ?? 0,
     [RequestStatus.Pending]:
-      data?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
     [RequestStatus.Approved]:
-      data?.filter((r) => r.status === RequestStatus.Approved).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Approved).length ??
+      0,
     [RequestStatus.Paid]:
-      data?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
     [RequestStatus.Rejected]:
-      data?.filter((r) => r.status === RequestStatus.Rejected).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Rejected).length ??
+      0,
   };
 
   const filteredData =
-    filter === "all" ? data : data?.filter((r) => r.status === filter);
+    filter === "all"
+      ? mergedData
+      : mergedData?.filter((r) => r.status === filter);
 
   return (
     <div className="w-full space-y-4">
@@ -272,7 +312,12 @@ export function ManageRequestsTable() {
               </TableRow>
             ) : (
               filteredData?.map((r) => (
-                <RequestRow keyword={keyword} key={r.id} r={r} />
+                <RequestRow
+                  keyword={keyword}
+                  key={r.id}
+                  r={r}
+                  onOptimisticUpdate={handleOptimisticUpdate}
+                />
               ))
             )}
           </TableBody>
@@ -285,9 +330,10 @@ export function ManageRequestsTable() {
 type RequestRowProps = {
   r: Request;
   keyword: string;
+  onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-function RequestRow({ r, keyword }: RequestRowProps) {
+function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
   const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
     r.projectId,
   );
@@ -365,6 +411,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
             requesterName={user?.name || ""}
             projectName={project?.name || ""}
             projectExpense={project?.expense}
+            onOptimisticUpdate={onOptimisticUpdate}
           />
         )}
       </TableCell>
