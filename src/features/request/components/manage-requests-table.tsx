@@ -333,12 +333,7 @@ type RequestRowProps = {
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-<<<<<<< azusa/manage/requests/Optimistic-Update
 function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
-  const { data: project } = useProjectByIdQuery(r.projectId);
-  const { data: user } = useUserByIdQuery(r.requestedBy);
-=======
-function RequestRow({ r, keyword }: RequestRowProps) {
   const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
     r.projectId,
   );
@@ -347,7 +342,6 @@ function RequestRow({ r, keyword }: RequestRowProps) {
     r.requestedBy,
   );
 
->>>>>>> develop
   const formatDateJP = (date: Date) =>
     date.toLocaleDateString("ja-JP", {
       year: "numeric",
@@ -408,16 +402,6 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       </TableCell>
 
       <TableCell>
-<<<<<<< azusa/manage/requests/Optimistic-Update
-        <ActionButtons
-          requestId={r.id}
-          status={r.status}
-          requesterName={user?.name || ""}
-          projectName={project?.name || ""}
-          projectExpense={project?.expense}
-          onOptimisticUpdate={onOptimisticUpdate}
-        />
-=======
         {isRowLoading ? (
           <Skeleton className="h-8 w-24" />
         ) : (
@@ -427,9 +411,9 @@ function RequestRow({ r, keyword }: RequestRowProps) {
             requesterName={user?.name || ""}
             projectName={project?.name || ""}
             projectExpense={project?.expense}
+            onOptimisticUpdate={onOptimisticUpdate}
           />
         )}
->>>>>>> develop
       </TableCell>
     </TableRow>
   );
