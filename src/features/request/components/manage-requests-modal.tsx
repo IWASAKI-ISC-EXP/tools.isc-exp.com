@@ -18,15 +18,15 @@ type ManageRequestsModalProps = {
   requesterName: string;
   projectExpense: number;
   isSubmitting: boolean;
-  isTeacherOrHigher: boolean;
+  canManageRequests: boolean;
   handleUpdate: (requestStatus: RequestStatus) => void;
   targetRequestStatus: RequestStatus;
-  buttontext: string;
-  buttonicon: React.ReactNode;
-  dialogtitle: string;
-  dialogdescription: string;
-  buttonclassname: string;
-  confirmButtonClassname: string;
+  buttonText: string;
+  buttonIcon: React.ReactNode;
+  dialogTitle: string;
+  dialogDescription: string;
+  buttonClassName: string;
+  confirmButtonClassName: string;
 };
 
 export function ManageRequestsModal({
@@ -34,25 +34,25 @@ export function ManageRequestsModal({
   requesterName,
   projectExpense,
   isSubmitting,
-  isTeacherOrHigher,
+  canManageRequests,
   handleUpdate,
   targetRequestStatus,
-  buttontext,
-  buttonicon,
-  dialogtitle,
-  dialogdescription,
-  buttonclassname,
-  confirmButtonClassname,
+  buttonText,
+  buttonIcon,
+  dialogTitle,
+  dialogDescription,
+  buttonClassName,
+  confirmButtonClassName,
 }: ManageRequestsModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className={buttonclassname}
-          disabled={isSubmitting || !isTeacherOrHigher}
+          className={buttonClassName}
+          disabled={isSubmitting || !canManageRequests}
           variant={"outline"}
         >
-          {buttontext}
+          {buttonText}
         </Button>
       </DialogTrigger>
 
@@ -66,10 +66,10 @@ export function ManageRequestsModal({
             <CircleAlert className="mt-1 h-10 w-10" />
             <div>
               <DialogTitle className="font-semibold text-lg">
-                {dialogtitle}
+                {dialogTitle}
               </DialogTitle>
 
-              <DialogDescription>{dialogdescription}</DialogDescription>
+              <DialogDescription>{dialogDescription}</DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -105,7 +105,7 @@ export function ManageRequestsModal({
               type="button"
               variant="outline"
               className="min-w-28"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !canManageRequests}
             >
               キャンセル
             </Button>
@@ -115,11 +115,11 @@ export function ManageRequestsModal({
             onClick={() => {
               handleUpdate(targetRequestStatus);
             }}
-            disabled={isSubmitting}
-            className={confirmButtonClassname}
+            disabled={isSubmitting || !canManageRequests}
+            className={confirmButtonClassName}
           >
-            {buttonicon}
-            {buttontext}
+            {buttonIcon}
+            {buttonText}
           </Button>
         </DialogFooter>
       </DialogContent>
