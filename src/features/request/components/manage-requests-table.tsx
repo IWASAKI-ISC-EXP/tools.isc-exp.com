@@ -359,14 +359,14 @@ function RequestRow({ r, keyword }: RequestRowProps) {
         {isRowLoading ? (
           <Skeleton className="h-8 w-24" />
         ) : (
-        <ActionButtons
-          requestId={r.id}
-          status={r.status}
-          requesterName={user?.name || ""}
-          projectName={project?.name || ""}
-          projectExpense={project?.expense}
-        />
-           )}
+          <ActionButtons
+            requestId={r.id}
+            status={r.status}
+            requesterName={user?.name || ""}
+            projectName={project?.name || ""}
+            projectExpense={project?.expense}
+          />
+        )}
       </TableCell>
     </TableRow>
   );
