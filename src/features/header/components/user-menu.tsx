@@ -12,6 +12,7 @@ import {
 import { useSelf } from "@/features/user/hooks/use-self";
 import { logOut } from "@/features/user/log-out";
 import { useDepartmentByIdQuery } from "@/features/user/queries/use-department-by-id-query";
+import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 
 type DropdownItemProps = {
   label: string;
@@ -49,7 +50,7 @@ export function UserMenu() {
 
         <DropdownItem label="学科" value={department.data?.name} />
 
-        <DropdownItem label="権限" value={self.role} />
+        <DropdownItem label="権限" value={convertRoleJapanese(self.role)} />
 
         <DropdownMenuSeparator />
 

@@ -274,9 +274,15 @@ type RequestRowProps = {
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
-  const { data: project } = useProjectByIdQuery(r.projectId);
-  const { data: user } = useUserByIdQuery(r.requestedBy);
+function RequestRow({ r, keyword }: RequestRowProps) {
+  const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
+    r.projectId,
+  );
+
+  const { data: user, isLoading: isUserLoading } = useUserByIdQuery(
+    r.requestedBy,
+  );
+
   const formatDateJP = (date: Date) =>
     date.toLocaleDateString("ja-JP", {
       year: "numeric",
@@ -284,42 +290,71 @@ function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
       day: "numeric",
     });
 
-  if (!user?.name.includes(keyword)) {
+  const isRowLoading = isUserLoading || isProjectLoading;
+
+  if (user && !user.name.includes(keyword)) {
     return null;
   }
 
   return (
     <TableRow>
       <TableCell>
-        <RequestStatusBadge status={r.status} />
-      </TableCell>
-
-      <TableCell>{user ? user.name : ""}</TableCell>
-
-      <TableCell className="whitespace-pre-line">
-        {project?.name}
-        <br />
-      </TableCell>
-
-      <TableCell>{formatDateJP(r.date)}</TableCell>
-
-      <TableCell>{formatDateJP(r.createdAt)}</TableCell>
-
-      <TableCell>{project?.expense}円</TableCell>
-
-      <TableCell className="whitespace-pre-line text-gray-600 text-sm">
-        {r.memo}
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-20" />
+        ) : (
+          <RequestStatusBadge status={r.status} />
+        )}
       </TableCell>
 
       <TableCell>
-        <ActionButtons
-          requestId={r.id}
-          status={r.status}
-          requesterName={user?.name || ""}
-          projectName={project?.name || ""}
-          projectExpense={project?.expense}
-          onOptimisticUpdate={onOptimisticUpdate}
-        />
+        {isRowLoading ? <Skeleton className="h-6 w-24" /> : user?.name}
+      </TableCell>
+
+      <TableCell className="whitespace-pre-line">
+        {isRowLoading ? <Skeleton className="h-6 w-32" /> : project?.name}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-28" />
+        ) : (
+          formatDateJP(r.date)
+        )}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-28" />
+        ) : (
+          formatDateJP(r.createdAt)
+        )}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-20" />
+        ) : (
+          `${project?.expense?.toLocaleString()}円`
+        )}
+      </TableCell>
+
+      <TableCell className="whitespace-pre-line text-gray-600 text-sm">
+        {isRowLoading ? <Skeleton className="h-6 w-40" /> : r.memo}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-8 w-24" />
+        ) : (
+          <ActionButtons
+            requestId={r.id}
+            status={r.status}
+            requesterName={user?.name || ""}
+            projectName={project?.name || ""}
+            projectExpense={project?.expense}
+            onOptimisticUpdate={onOptimisticUpdate}
+          />
+        )}
       </TableCell>
     </TableRow>
   );
