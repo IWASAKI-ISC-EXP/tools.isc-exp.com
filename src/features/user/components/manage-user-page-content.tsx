@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { User } from "@/entities/self";
+import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 import { useDepartmentByIdQuery } from "../queries/use-department-by-id-query";
 import { useDepartmentsQuery } from "../queries/use-departments-query";
 import { useUsersQuery } from "../queries/use-users-query";
@@ -84,7 +85,7 @@ function UserRow({ user }: { user: User }) {
       <TableCell className="py-4">
         {department?.name || <Skeleton className="h-4 w-20" />}
       </TableCell>
-      <TableCell className="py-4">{user.role}</TableCell>
+      <TableCell className="py-4">{convertRoleJapanese(user.role)}</TableCell>
       <TableCell className="py-4">
         <UpdateUserForm user={user} />
       </TableCell>
