@@ -19,8 +19,8 @@ import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import { useRequests } from "../queries/use-request";
-import { ChangeRequestStatusDialog } from "./change-request-status-dialog";
 import { RequestStatusBadge } from "./request-status-badge";
+import { RequestStatusChangeConfirmDialog } from "./request-status-change-confirm-dialog";
 import {
   type RequestFilterStatus,
   RequestFilterTabs,
@@ -74,7 +74,7 @@ function ActionButtons({
   if (status === RequestStatus.Pending) {
     return (
       <div className="flex justify-end gap-2">
-        <ChangeRequestStatusDialog
+        <RequestStatusChangeConfirmDialog
           projectName={projectName || ""}
           requesterName={requesterName}
           projectExpense={projectExpense || 0}
@@ -90,7 +90,7 @@ function ActionButtons({
           confirmButtonClassName="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
         />
 
-        <ChangeRequestStatusDialog
+        <RequestStatusChangeConfirmDialog
           projectName={projectName || ""}
           requesterName={requesterName}
           projectExpense={projectExpense || 0}
@@ -111,7 +111,7 @@ function ActionButtons({
 
   if (status === RequestStatus.Approved) {
     return (
-      <ChangeRequestStatusDialog
+      <RequestStatusChangeConfirmDialog
         projectName={projectName || ""}
         requesterName={requesterName}
         projectExpense={projectExpense || 0}

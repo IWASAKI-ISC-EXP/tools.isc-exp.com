@@ -13,7 +13,7 @@ import {
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import type { RequestStatus } from "@/entities/request";
 
-type ChangeRequestStatusDialogProps = {
+type RequestStatusChangeConfirmDialogProps = {
   projectName: string;
   requesterName: string;
   projectExpense: number;
@@ -29,7 +29,7 @@ type ChangeRequestStatusDialogProps = {
   confirmButtonClassName: string;
 };
 
-export function ChangeRequestStatusDialog({
+export function RequestStatusChangeConfirmDialog({
   projectName,
   requesterName,
   projectExpense,
@@ -43,7 +43,7 @@ export function ChangeRequestStatusDialog({
   dialogDescription,
   buttonClassName,
   confirmButtonClassName,
-}: ChangeRequestStatusDialogProps) {
+}: RequestStatusChangeConfirmDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
