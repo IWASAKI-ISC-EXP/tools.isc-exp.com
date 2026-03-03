@@ -200,11 +200,13 @@ type RequestRowProps = {
 };
 
 function RequestRow({ r, keyword }: RequestRowProps) {
-  const { data: project, isLoading: isProjectLoading } =
-    useProjectByIdQuery(r.projectId);
+  const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
+    r.projectId,
+  );
 
-  const { data: user, isLoading: isUserLoading } =
-    useUserByIdQuery(r.requestedBy);
+  const { data: user, isLoading: isUserLoading } = useUserByIdQuery(
+    r.requestedBy,
+  );
 
   const formatDateJP = (date: Date) =>
     date.toLocaleDateString("ja-JP", {
@@ -214,16 +216,13 @@ function RequestRow({ r, keyword }: RequestRowProps) {
     });
 
   const isRowLoading = isUserLoading || isProjectLoading;
-  const isRowReady = user && project;
 
- 
   if (user && !user.name.includes(keyword)) {
     return null;
   }
 
   return (
     <TableRow>
-
       <TableCell>
         {isRowLoading ? (
           <Skeleton className="h-6 w-20" />
@@ -232,21 +231,12 @@ function RequestRow({ r, keyword }: RequestRowProps) {
         )}
       </TableCell>
 
-
       <TableCell>
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-24" />
-        ) : (
-          user?.name
-        )}
+        {isRowLoading ? <Skeleton className="h-6 w-24" /> : user?.name}
       </TableCell>
 
       <TableCell className="whitespace-pre-line">
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-32" />
-        ) : (
-          project?.name
-        )}
+        {isRowLoading ? <Skeleton className="h-6 w-32" /> : project?.name}
       </TableCell>
 
       <TableCell>
@@ -274,11 +264,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       </TableCell>
 
       <TableCell className="whitespace-pre-line text-gray-600 text-sm">
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-40" />
-        ) : (
-          r.memo
-        )}
+        {isRowLoading ? <Skeleton className="h-6 w-40" /> : r.memo}
       </TableCell>
 
       <TableCell>
