@@ -17,6 +17,7 @@ import { useDepartmentByIdQuery } from "../queries/use-department-by-id-query";
 import { useDepartmentsQuery } from "../queries/use-departments-query";
 import { useUsersQuery } from "../queries/use-users-query";
 import { UpdateUserForm } from "./updata-user-form";
+
 export function ManageUserPageContent() {
   const [keyword, setKeyword] = useState("");
   const { data: departments = [] } = useDepartmentsQuery();
