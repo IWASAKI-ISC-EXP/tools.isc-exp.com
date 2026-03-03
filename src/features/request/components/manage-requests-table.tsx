@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { type Request, RequestStatus } from "@/entities/request";
-import { Role } from "@/entities/role";
+import { hasEnoughRole, Role } from "@/entities/role";
 import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-id-query";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
@@ -42,18 +42,21 @@ function ActionButtons({
   projectExpense?: number;
 }) {
   const { mutate } = useUpdateRequestStatusByIdMutation();
-  const [isSubmitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const self = useSelf();
 
-  const isTeacherOrHigher = self?.role === Role.Teacher;
+  const isTeacher = self?.role === Role.Teacher;
+
+  const isLeaderOrHigher = hasEnoughRole(self?.role, Role.Leader);
 
   const handleUpdate = (nextStatus: RequestStatus) => {
-    setSubmitting(true);
+    setIsSubmitting(true);
     mutate({
       id: requestId,
       status: nextStatus,
     });
+    setIsSubmitting(false);
   };
 
   if (status === RequestStatus.Pending) {
@@ -64,15 +67,15 @@ function ActionButtons({
           requesterName={requesterName}
           projectExpense={projectExpense || 0}
           isSubmitting={isSubmitting}
-          isTeacherOrHigher={!isTeacherOrHigher || isTeacherOrHigher}
+          canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
           targetRequestStatus={RequestStatus.Rejected}
-          buttonicon={<Trash2 className="mr-2 h-4 w-4" />}
-          buttontext="却下"
-          buttonclassname="text-red-600 bg-white hover:text-red-700"
-          dialogtitle="却下確認"
-          dialogdescription="申請を却下します。よろしいですか？"
-          confirmButtonClassname="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
+          buttonIcon={<Trash2 className="mr-2 h-4 w-4" />}
+          buttonText="却下"
+          buttonClassName="text-red-600 bg-white hover:text-red-700"
+          dialogTitle="却下確認"
+          dialogDescription="申請を却下します。よろしいですか？"
+          confirmButtonClassName="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
         />
 
         <ManageRequestsModal
@@ -80,15 +83,15 @@ function ActionButtons({
           requesterName={requesterName}
           projectExpense={projectExpense || 0}
           isSubmitting={isSubmitting}
-          isTeacherOrHigher={!isTeacherOrHigher || isTeacherOrHigher}
+          canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
           targetRequestStatus={RequestStatus.Approved}
-          buttonicon={<Save className="mr-2 h-4 w-4" />}
-          buttontext="承認"
-          buttonclassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-          dialogtitle="承認確認"
-          dialogdescription="申請を承認します。よろしいですか？"
-          confirmButtonClassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+          buttonIcon={<Save className="mr-2 h-4 w-4" />}
+          buttonText="承認"
+          buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+          dialogTitle="承認確認"
+          dialogDescription="申請を承認します。よろしいですか？"
+          confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
         />
       </div>
     );
@@ -101,15 +104,15 @@ function ActionButtons({
         requesterName={requesterName}
         projectExpense={projectExpense || 0}
         isSubmitting={isSubmitting}
-        isTeacherOrHigher={isTeacherOrHigher}
+        canManageRequests={isTeacher}
         handleUpdate={handleUpdate}
         targetRequestStatus={RequestStatus.Paid}
-        buttonicon={<Save className="mr-2 h-4 w-4" />}
-        buttontext="精算"
-        buttonclassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-        dialogtitle="精算確認"
-        dialogdescription="交通費を生産します。よろしいですか？"
-        confirmButtonClassname="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+        buttonIcon={<Save className="mr-2 h-4 w-4" />}
+        buttonText="精算"
+        buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+        dialogTitle="精算確認"
+        dialogDescription="交通費を精算します。よろしいですか？"
+        confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
       />
     );
   }
