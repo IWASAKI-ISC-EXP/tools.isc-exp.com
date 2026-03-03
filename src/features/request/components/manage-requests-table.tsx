@@ -44,12 +44,14 @@ function ActionButtons({
   requesterName,
   projectName,
   projectExpense,
+  onOptimisticUpdate,
 }: {
   requestId: string;
   status: RequestStatus;
   requesterName: string;
   projectName?: string;
   projectExpense?: number;
+  onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 }) {
   const { mutate } = useUpdateRequestStatusByIdMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,12 +61,23 @@ function ActionButtons({
   const isTeacher = self?.role === Role.Teacher;
 
   const handleUpdate = (nextStatus: RequestStatus) => {
+    const prevStatus = status;
     setIsSubmitting(true);
-    mutate({
-      id: requestId,
-      status: nextStatus,
-    });
-    setIsSubmitting(false);
+    onOptimisticUpdate(requestId, nextStatus);
+    mutate(
+      {
+        id: requestId,
+        status: nextStatus,
+      },
+      {
+        onError() {
+          onOptimisticUpdate(requestId, prevStatus);
+        },
+        onSettled() {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
 
   if (status === RequestStatus.Pending) {
@@ -184,22 +197,45 @@ export function ManageRequestsTable() {
     RequestStatus.Pending,
   );
 
+  const [optimisticStatusMap, setOptimisticStatusMap] = useState<
+    Record<string, RequestStatus>
+  >({});
+
   const { data, isLoading } = useRequests();
 
+  const mergedData = data?.map((r) => ({
+    ...r,
+    status: optimisticStatusMap[r.id] ?? r.status,
+  }));
+
+  const handleOptimisticUpdate = (
+    requestId: string,
+    nextStatus: RequestStatus,
+  ) => {
+    setOptimisticStatusMap((prev) => ({
+      ...prev,
+      [requestId]: nextStatus,
+    }));
+  };
+
   const statusCounts: Record<RequestFilterStatus, number> = {
-    all: data?.length ?? 0,
+    all: mergedData?.length ?? 0,
     [RequestStatus.Pending]:
-      data?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
     [RequestStatus.Approved]:
-      data?.filter((r) => r.status === RequestStatus.Approved).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Approved).length ??
+      0,
     [RequestStatus.Paid]:
-      data?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
     [RequestStatus.Rejected]:
-      data?.filter((r) => r.status === RequestStatus.Rejected).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Rejected).length ??
+      0,
   };
 
   const filteredData =
-    filter === "all" ? data : data?.filter((r) => r.status === filter);
+    filter === "all"
+      ? mergedData
+      : mergedData?.filter((r) => r.status === filter);
 
   return (
     <div className="w-full space-y-4">
@@ -276,7 +312,12 @@ export function ManageRequestsTable() {
               </TableRow>
             ) : (
               filteredData?.map((r) => (
-                <RequestRow keyword={keyword} key={r.id} r={r} />
+                <RequestRow
+                  keyword={keyword}
+                  key={r.id}
+                  r={r}
+                  onOptimisticUpdate={handleOptimisticUpdate}
+                />
               ))
             )}
           </TableBody>
@@ -289,9 +330,10 @@ export function ManageRequestsTable() {
 type RequestRowProps = {
   r: Request;
   keyword: string;
+  onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-function RequestRow({ r, keyword }: RequestRowProps) {
+function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
   const { data: project } = useProjectByIdQuery(r.projectId);
   const { data: user } = useUserByIdQuery(r.requestedBy);
   const formatDateJP = (date: Date) =>
@@ -335,6 +377,7 @@ function RequestRow({ r, keyword }: RequestRowProps) {
           requesterName={user?.name || ""}
           projectName={project?.name || ""}
           projectExpense={project?.expense}
+          onOptimisticUpdate={onOptimisticUpdate}
         />
       </TableCell>
     </TableRow>
