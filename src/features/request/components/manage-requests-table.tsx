@@ -52,18 +52,19 @@ function ActionButtons({
   projectExpense?: number;
 }) {
   const { mutate } = useUpdateRequestStatusByIdMutation();
-  const [isSubmitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const self = useSelf();
 
-  const isTeacherOrHigher = self?.role === Role.Teacher;
+  const isTeacher = self?.role === Role.Teacher;
 
   const handleUpdate = (nextStatus: RequestStatus) => {
-    setSubmitting(true);
+    setIsSubmitting(true);
     mutate({
       id: requestId,
       status: nextStatus,
     });
+    setIsSubmitting(false);
   };
 
   if (status === RequestStatus.Pending) {
@@ -95,7 +96,7 @@ function ActionButtons({
         <DialogTrigger asChild>
           <Button
             className="bg-indigo-600 hover:bg-indigo-700"
-            disabled={isSubmitting || !isTeacherOrHigher}
+            disabled={isSubmitting || !isTeacher}
           >
             精算
           </Button>
