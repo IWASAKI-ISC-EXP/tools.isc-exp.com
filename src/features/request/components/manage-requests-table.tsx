@@ -274,7 +274,7 @@ type RequestRowProps = {
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-function RequestRow({ r, keyword }: RequestRowProps) {
+function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
   const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
     r.projectId,
   );
