@@ -1,18 +1,7 @@
 "use client";
 
-import { CircleAlert, Save } from "lucide-react";
+import { Save, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -24,13 +13,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { type Request, RequestStatus } from "@/entities/request";
-import { Role } from "@/entities/role";
+import { hasEnoughRole, Role } from "@/entities/role";
 import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-id-query";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import { useRequests } from "../queries/use-request";
 import { RequestStatusBadge } from "./request-status-badge";
+import { RequestStatusChangeConfirmDialog } from "./request-status-change-confirm-dialog";
 import {
   type RequestFilterStatus,
   RequestFilterTabs,
@@ -59,6 +49,7 @@ function ActionButtons({
   const self = useSelf();
 
   const isTeacher = self?.role === Role.Teacher;
+  const isLeaderOrHigher = hasEnoughRole(self?.role, Role.Leader);
 
   const handleUpdate = (nextStatus: RequestStatus) => {
     const prevStatus = status;
@@ -83,108 +74,58 @@ function ActionButtons({
   if (status === RequestStatus.Pending) {
     return (
       <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          className="text-red-600"
-          disabled={isSubmitting}
-          onClick={() => handleUpdate(RequestStatus.Rejected)}
-        >
-          却下
-        </Button>
+        <RequestStatusChangeConfirmDialog
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
+          isSubmitting={isSubmitting}
+          canManageRequests={isLeaderOrHigher}
+          handleUpdate={handleUpdate}
+          targetRequestStatus={RequestStatus.Rejected}
+          buttonIcon={<Trash2 className="mr-2 h-4 w-4" />}
+          buttonText="却下"
+          buttonClassName="text-red-600 bg-white hover:text-red-700"
+          dialogTitle="却下確認"
+          dialogDescription="申請を却下します。よろしいですか？"
+          confirmButtonClassName="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
+        />
 
-        <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isSubmitting}
-          onClick={() => handleUpdate(RequestStatus.Approved)}
-        >
-          承認
-        </Button>
+        <RequestStatusChangeConfirmDialog
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
+          isSubmitting={isSubmitting}
+          canManageRequests={isLeaderOrHigher}
+          handleUpdate={handleUpdate}
+          targetRequestStatus={RequestStatus.Approved}
+          buttonIcon={<Save className="mr-2 h-4 w-4" />}
+          buttonText="承認"
+          buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+          dialogTitle="承認確認"
+          dialogDescription="申請を承認します。よろしいですか？"
+          confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+        />
       </div>
     );
   }
 
   if (status === RequestStatus.Approved) {
     return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            className="bg-indigo-600 hover:bg-indigo-700"
-            disabled={isSubmitting || !isTeacher}
-          >
-            精算
-          </Button>
-        </DialogTrigger>
-
-        <DialogContent
-          className="sm:max-w-sm"
-          onInteractOutside={(e) => isSubmitting && e.preventDefault()}
-          onEscapeKeyDown={(e) => isSubmitting && e.preventDefault()}
-        >
-          <DialogHeader>
-            <div className="flex items-start gap-3">
-              <CircleAlert className="mt-1 h-10 w-10" />
-              <div>
-                <DialogTitle className="font-semibold text-lg">
-                  精算確認
-                </DialogTitle>
-
-                <DialogDescription>
-                  交通費を精算します。よろしいですか？
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <Table className="text-sm">
-              <TableBody>
-                <TableRow>
-                  <TableCell className="w-32 font-medium text-gray-600">
-                    案件名
-                  </TableCell>
-                  <TableCell>{projectName}</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium text-gray-600">
-                    申請者
-                  </TableCell>
-                  <TableCell>{requesterName}</TableCell>
-                </TableRow>
-
-                <TableRow>
-                  <TableCell className="font-medium text-gray-600">
-                    金額
-                  </TableCell>
-                  <TableCell>{projectExpense} 円</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                type="button"
-                variant="outline"
-                className="min-w-28"
-                disabled={isSubmitting}
-              >
-                キャンセル
-              </Button>
-            </DialogClose>
-            <Button
-              variant="outline"
-              onClick={() => {
-                handleUpdate(RequestStatus.Paid);
-              }}
-              disabled={isSubmitting}
-              className="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              精算する
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RequestStatusChangeConfirmDialog
+        projectName={projectName || ""}
+        requesterName={requesterName}
+        projectExpense={projectExpense || 0}
+        isSubmitting={isSubmitting}
+        canManageRequests={isTeacher}
+        handleUpdate={handleUpdate}
+        targetRequestStatus={RequestStatus.Paid}
+        buttonIcon={<Save className="mr-2 h-4 w-4" />}
+        buttonText="精算"
+        buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+        dialogTitle="精算確認"
+        dialogDescription="交通費を精算します。よろしいですか？"
+        confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+      />
     );
   }
 
