@@ -6,8 +6,8 @@ import { useDeleteMyRequestByIdMutation } from "../mutations/use-delete-my-reque
 import { useMyRequestsQuery } from "../queries/use-my-requests-query";
 
 export type RequestWithProject = Request & {
-  projectName: string;
-  expense: number;
+  projectName?: string;
+  expense?: number;
 };
 
 export function useMeRequestTable() {
@@ -19,29 +19,24 @@ export function useMeRequestTable() {
   const projectsQuery = useProjectsQuery();
 
   const allData = useMemo<RequestWithProject[]>(() => {
-    if (!requestsQuery.data || !projectsQuery.data) {
-      return [];
-    }
+    if (!requestsQuery.data) return [];
 
     const projectMap = new Map(
-      projectsQuery.data.map((p) => [
+      projectsQuery.data?.map((p) => [
         p.id,
         { name: p.name, expense: p.expense },
-      ]),
+      ]) ?? [],
     );
 
-    return requestsQuery.data
-      .map((req): RequestWithProject | null => {
-        const project = projectMap.get(req.projectId);
-        if (!project) return null;
+    return requestsQuery.data.map((req) => {
+      const project = projectMap.get(req.projectId);
 
-        return {
-          ...req,
-          projectName: project.name,
-          expense: project.expense,
-        };
-      })
-      .filter((row): row is RequestWithProject => row !== null);
+      return {
+        ...req,
+        projectName: project?.name,
+        expense: project?.expense,
+      };
+    });
   }, [requestsQuery.data, projectsQuery.data]);
 
   const filteredData = useMemo(() => {
@@ -61,7 +56,8 @@ export function useMeRequestTable() {
     setStatus,
     allData,
     data: filteredData,
-    isLoading: requestsQuery.isLoading || projectsQuery.isLoading,
+    isLoading: requestsQuery.isLoading, // ← ここが重要
+    isProjectsLoading: projectsQuery.isLoading,
     error: requestsQuery.error || projectsQuery.error,
     deleteRequest,
     isDeleting: deleteMutation.isPending,

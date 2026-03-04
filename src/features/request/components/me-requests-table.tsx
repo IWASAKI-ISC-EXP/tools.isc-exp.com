@@ -60,7 +60,7 @@ export function MeRequestsTable({
         </TableHeader>
 
         <TableBody className="bg-white">
-          {loading ? (
+          {loading && data.length === 0 ? (
             Array.from(
               { length: 5 },
               (_, index) => `skeleton-row-${index}`,
@@ -85,7 +85,11 @@ export function MeRequestsTable({
                   </TableCell>
 
                   <TableCell className="py-4 font-medium">
-                    {row.projectName}
+                    {row.projectName ? (
+                      row.projectName
+                    ) : (
+                      <Skeleton className="h-5 w-32" />
+                    )}
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
@@ -97,7 +101,11 @@ export function MeRequestsTable({
                   </TableCell>
 
                   <TableCell className="py-4 text-right">
-                    ¥{row.expense.toLocaleString()}
+                    {row.expense !== undefined ? (
+                      <>¥{row.expense.toLocaleString()}</>
+                    ) : (
+                      <Skeleton className="ml-auto h-5 w-20" />
+                    )}
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-600">
