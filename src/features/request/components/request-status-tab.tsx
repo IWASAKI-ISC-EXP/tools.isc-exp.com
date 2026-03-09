@@ -1,5 +1,7 @@
 "use client";
 
+import { parseAsString, useQueryState } from "nuqs";
+import { useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -37,9 +39,19 @@ type Props = {
 };
 
 export function RequestFilterTabs({ value, onChange, counts }: Props) {
+  const [status, setStatus] = useQueryState("status", parseAsString);
+
+  useEffect(() => {
+    if (!status) return;
+    if (isRequestFilterStatus(status) && status !== value) {
+      onChange(status);
+    }
+  }, [status, value, onChange]);
+
   const handleChange = (v: string) => {
     if (isRequestFilterStatus(v)) {
       onChange(v);
+      setStatus(v);
     }
   };
 
