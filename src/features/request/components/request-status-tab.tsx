@@ -39,19 +39,19 @@ type Props = {
 };
 
 export function RequestFilterTabs({ value, onChange, counts }: Props) {
-  const [status, setStatus] = useQueryState("status", parseAsString);
+  const [urlStatus, setUrlStatus] = useQueryState("status", parseAsString);
 
   useEffect(() => {
-    if (!status) return;
-    if (isRequestFilterStatus(status) && status !== value) {
-      onChange(status);
+    if (!urlStatus) return;
+    if (isRequestFilterStatus(urlStatus) && urlStatus !== value) {
+      onChange(urlStatus);
     }
-  }, [status, value, onChange]);
+  }, [urlStatus, value, onChange]);
 
   const handleChange = (v: string) => {
     if (isRequestFilterStatus(v)) {
       onChange(v);
-      setStatus(v);
+      setUrlStatus(v);
     }
   };
 
