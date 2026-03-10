@@ -81,7 +81,11 @@ export function MeRequestsTable({
               return (
                 <TableRow key={row.id}>
                   <TableCell className="py-4">
-                    <RequestStatusBadge status={row.status} />
+                    {row.status ? (
+                      <RequestStatusBadge status={row.status} />
+                    ) : (
+                      <Skeleton className="h-5 w-32" />
+                    )}
                   </TableCell>
 
                   <TableCell className="py-4 font-medium">
@@ -93,16 +97,30 @@ export function MeRequestsTable({
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
-                    {formatDateJP(row.date)}
+                    {row.date ? (
+                      <time dateTime={row.date.toISOString().slice(0, 10)}>
+                        {formatDateJP(row.date)}
+                      </time>
+                    ) : (
+                      <Skeleton className="h-5 w-24" />
+                    )}
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
-                    {formatDateJP(row.createdAt)}
+                    {row.createdAt ? (
+                      <time dateTime={row.createdAt.toISOString().slice(0, 10)}>
+                        {formatDateJP(row.createdAt)}
+                      </time>
+                    ) : (
+                      <Skeleton className="h-5 w-24" />
+                    )}
                   </TableCell>
 
                   <TableCell className="py-4 text-right">
                     {row.expense !== undefined ? (
-                      <>¥{row.expense.toLocaleString()}</>
+                      <data value={row.expense}>
+                        ¥{row.expense.toLocaleString()}
+                      </data>
                     ) : (
                       <Skeleton className="ml-auto h-5 w-20" />
                     )}

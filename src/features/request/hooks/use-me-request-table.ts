@@ -56,7 +56,7 @@ export function useMeRequestTable() {
     setStatus,
     allData,
     data: filteredData,
-    isLoading: requestsQuery.isLoading, // ← ここが重要
+    isLoading: requestsQuery.isLoading,
     isProjectsLoading: projectsQuery.isLoading,
     error: requestsQuery.error || projectsQuery.error,
     deleteRequest,
