@@ -1,9 +1,23 @@
-import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
+import { useMemo } from "react";
 import { type Request, RequestStatus } from "@/entities/request";
 import { useProjectsQuery } from "@/features/project/queries/use-projects-query";
 import type { RequestFilterStatus } from "../components/request-status-tab";
 import { useDeleteMyRequestByIdMutation } from "../mutations/use-delete-my-request-by-id-mutation";
 import { useMyRequestsQuery } from "../queries/use-my-requests-query";
+
+function normalizeRequestFilterStatus(
+  value: string | null | undefined,
+): RequestFilterStatus {
+  return value === "all" ||
+    value === RequestStatus.Pending ||
+    value === RequestStatus.Approved ||
+    value === RequestStatus.Paid ||
+    value === RequestStatus.Rejected
+    ? value
+    : RequestStatus.Pending;
+}
 
 export type RequestWithProject = Request & {
   projectName: string;
@@ -11,9 +25,22 @@ export type RequestWithProject = Request & {
 };
 
 export function useMeRequestTable() {
-  const [status, setStatus] = useState<RequestFilterStatus>(
-    RequestStatus.Pending,
+  const searchParams = useSearchParams();
+
+  const initialFilter = normalizeRequestFilterStatus(
+    searchParams.get("status"),
   );
+
+  const [statusRaw, setStatusRaw] = useQueryState(
+    "status",
+    parseAsString.withDefault(initialFilter),
+  );
+
+  const status = normalizeRequestFilterStatus(statusRaw);
+
+  const setStatus = (next: RequestFilterStatus) => {
+    void setStatusRaw(next);
+  };
 
   const requestsQuery = useMyRequestsQuery();
   const projectsQuery = useProjectsQuery();

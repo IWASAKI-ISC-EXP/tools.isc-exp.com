@@ -40,7 +40,7 @@ export function MeRequestsBody() {
       <div className="flex items-center justify-between">
         <RequestFilterTabs
           value={status}
-          onChange={setStatus}
+          onChange={(value) => setStatus(value)}
           counts={counts}
         />
 
