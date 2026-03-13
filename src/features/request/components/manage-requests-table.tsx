@@ -1,6 +1,8 @@
 "use client";
 
 import { Save, Trash2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,6 +29,18 @@ import {
 } from "./request-status-tab";
 
 const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
+
+function normalizeRequestFilterStatus(
+  value: string | null | undefined,
+): RequestFilterStatus {
+  return value === "all" ||
+    value === RequestStatus.Pending ||
+    value === RequestStatus.Approved ||
+    value === RequestStatus.Paid ||
+    value === RequestStatus.Rejected
+    ? value
+    : RequestStatus.Pending;
+}
 
 function ActionButtons({
   requestId,
@@ -134,9 +148,19 @@ function ActionButtons({
 
 export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
-  const [filter, setFilter] = useState<RequestFilterStatus>(
-    RequestStatus.Pending,
+
+  const searchParams = useSearchParams();
+
+  const initialFilter = normalizeRequestFilterStatus(
+    searchParams.get("status"),
   );
+
+  const [filter, setFilter] = useQueryState(
+    "status",
+    parseAsString.withDefault(initialFilter),
+  );
+
+  const selectedStatus = normalizeRequestFilterStatus(filter);
 
   const [optimisticStatusMap, setOptimisticStatusMap] = useState<
     Record<string, RequestStatus>
@@ -174,9 +198,9 @@ export function ManageRequestsTable() {
   };
 
   const filteredData =
-    filter === "all"
+    selectedStatus === "all"
       ? mergedData
-      : mergedData?.filter((r) => r.status === filter);
+      : mergedData?.filter((r) => r.status === selectedStatus);
 
   return (
     <div className="w-full space-y-4">
@@ -190,8 +214,8 @@ export function ManageRequestsTable() {
 
         <div className="mt-4">
           <RequestFilterTabs
-            value={filter}
-            onChange={setFilter}
+            value={selectedStatus}
+            onChange={(value) => void setFilter(value)}
             counts={statusCounts}
           />
         </div>
