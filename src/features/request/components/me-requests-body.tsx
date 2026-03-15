@@ -2,12 +2,10 @@
 
 import { RequestStatus } from "@/entities/request";
 import { useMeRequestTable } from "../hooks/use-me-request-table";
+import type { RequestFilterStatus } from "../hooks/use-request-filter-status";
 import { MeRequestsTable } from "./me-requests-table";
 import { NewRequestButton } from "./new-request-button";
-import {
-  type RequestFilterStatus,
-  RequestFilterTabs,
-} from "./request-status-tab";
+import { RequestFilterTabs } from "./request-status-tab";
 
 export function MeRequestsBody() {
   const {
@@ -40,7 +38,7 @@ export function MeRequestsBody() {
       <div className="flex items-center justify-between">
         <RequestFilterTabs
           value={status}
-          onChange={(value) => setStatus(value)}
+          onChange={setStatus}
           counts={counts}
         />
 

@@ -1,8 +1,6 @@
 "use client";
 
 import { Save, Trash2 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,27 +18,16 @@ import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-i
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
+import {
+  type RequestFilterStatus,
+  useRequestFilterStatus,
+} from "../hooks/use-request-filter-status";
 import { useRequests } from "../queries/use-request";
 import { RequestStatusBadge } from "./request-status-badge";
 import { RequestStatusChangeConfirmDialog } from "./request-status-change-confirm-dialog";
-import {
-  type RequestFilterStatus,
-  RequestFilterTabs,
-} from "./request-status-tab";
+import { RequestFilterTabs } from "./request-status-tab";
 
 const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
-
-function normalizeRequestFilterStatus(
-  value: string | null | undefined,
-): RequestFilterStatus {
-  return value === "all" ||
-    value === RequestStatus.Pending ||
-    value === RequestStatus.Approved ||
-    value === RequestStatus.Paid ||
-    value === RequestStatus.Rejected
-    ? value
-    : RequestStatus.Pending;
-}
 
 function ActionButtons({
   requestId,
@@ -149,18 +136,7 @@ function ActionButtons({
 export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
 
-  const searchParams = useSearchParams();
-
-  const initialFilter = normalizeRequestFilterStatus(
-    searchParams.get("status"),
-  );
-
-  const [filter, setFilter] = useQueryState(
-    "status",
-    parseAsString.withDefault(initialFilter),
-  );
-
-  const selectedStatus = normalizeRequestFilterStatus(filter);
+  const { status: selectedStatus, setStatus } = useRequestFilterStatus();
 
   const [optimisticStatusMap, setOptimisticStatusMap] = useState<
     Record<string, RequestStatus>
@@ -215,7 +191,7 @@ export function ManageRequestsTable() {
         <div className="mt-4">
           <RequestFilterTabs
             value={selectedStatus}
-            onChange={(value) => void setFilter(value)}
+            onChange={setStatus}
             counts={statusCounts}
           />
         </div>
