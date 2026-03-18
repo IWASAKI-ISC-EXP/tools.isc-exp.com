@@ -27,6 +27,20 @@ type Props = {
   onDelete: (id: string) => void;
   isDeleting?: boolean;
 };
+type LoadingCellProps<T> = {
+  value: T | undefined;
+  render: (value: T) => React.ReactNode;
+  skeleton: React.ReactNode;
+};
+
+export const LoadingCell = <T,>({
+  value,
+  render,
+  skeleton,
+}: LoadingCellProps<T>) => {
+  if (value == null) return <>{skeleton}</>;
+  return <>{render(value)}</>;
+};
 
 export function MeRequestsTable({
   data,
@@ -52,15 +66,15 @@ export function MeRequestsTable({
             <TableHead className="px-2 py-2 text-left">ステータス</TableHead>
             <TableHead className="px-2 py-2 text-left">案件内容</TableHead>
             <TableHead className="px-2 py-2 text-left">参加日</TableHead>
-            <TableHead className="px-2 py-2 text-left">申請日時</TableHead>
-            <TableHead className="px-2 py-2 text-right">金額</TableHead>
+            <TableHead className="px-2 py-2 text-left">金額</TableHead>
             <TableHead className="px-2 py-2 text-left">備考</TableHead>
+            <TableHead className="px-2 py-2 text-left">申請日時</TableHead>
             <TableHead className="px-2 py-2 text-left">削除</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody className="bg-white">
-          {loading ? (
+          {loading && data.length === 0 ? (
             Array.from(
               { length: 5 },
               (_, index) => `skeleton-row-${index}`,
@@ -81,27 +95,59 @@ export function MeRequestsTable({
               return (
                 <TableRow key={row.id}>
                   <TableCell className="py-4">
-                    <RequestStatusBadge status={row.status} />
+                    <LoadingCell
+                      value={row.status}
+                      skeleton={<Skeleton className="h-5 w-32" />}
+                      render={(v) => <RequestStatusBadge status={v} />}
+                    />
                   </TableCell>
 
                   <TableCell className="py-4 font-medium">
-                    {row.projectName}
+                    <LoadingCell
+                      value={row.projectName}
+                      skeleton={<Skeleton className="h-5 w-32" />}
+                      render={(v) => v}
+                    />
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
-                    {formatDateJP(row.date)}
+                    <LoadingCell
+                      value={row.date}
+                      skeleton={<Skeleton className="h-5 w-24" />}
+                      render={(v) => (
+                        <time dateTime={v.toISOString().slice(0, 10)}>
+                          {formatDateJP(v)}
+                        </time>
+                      )}
+                    />
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
-                    {formatDateJP(row.createdAt)}
-                  </TableCell>
-
-                  <TableCell className="py-4 text-right">
-                    ¥{row.expense.toLocaleString()}
+                    <LoadingCell
+                      value={row.expense}
+                      skeleton={<Skeleton className="ml-auto h-5 w-20" />}
+                      render={(v) => <p>¥{v.toLocaleString()}</p>}
+                    />
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-600">
                     {row.memo}
+                  </TableCell>
+
+                  <TableCell className="whitespace-nowrap py-4">
+                    <LoadingCell
+                      value={row.createdAt}
+                      skeleton={<Skeleton className="ml-auto h-5 w-20" />}
+                      render={(v) => (
+                        <p className="text-gray-600">
+                          申請日：
+                          <br></br>
+                          <time dateTime={v.toISOString().slice(0, 10)}>
+                            {formatDateJP(v)}
+                          </time>
+                        </p>
+                      )}
+                    />
                   </TableCell>
 
                   <TableCell className="py-4">
