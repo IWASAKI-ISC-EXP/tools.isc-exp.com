@@ -19,9 +19,10 @@
     "firebase-admin": "^13.6.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
+    "nuqs": "^2.8.9",
     "radix-ui": "^1.4.3",
-    "react-day-picker": "^9.13.0",
     "react": "19.2.3",
+    "react-day-picker": "^9.13.0",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0",
     "valibot": "^1.2.0"

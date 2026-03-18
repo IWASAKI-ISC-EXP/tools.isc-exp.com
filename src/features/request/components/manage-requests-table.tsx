@@ -18,13 +18,14 @@ import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-i
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
+import {
+  type RequestFilterStatus,
+  useRequestFilterStatus,
+} from "../hooks/use-request-filter-status";
 import { useRequests } from "../queries/use-request";
 import { RequestStatusBadge } from "./request-status-badge";
 import { RequestStatusChangeConfirmDialog } from "./request-status-change-confirm-dialog";
-import {
-  type RequestFilterStatus,
-  RequestFilterTabs,
-} from "./request-status-tab";
+import { RequestFilterTabs } from "./request-status-tab";
 
 const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
 
@@ -134,9 +135,8 @@ function ActionButtons({
 
 export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
-  const [filter, setFilter] = useState<RequestFilterStatus>(
-    RequestStatus.Pending,
-  );
+
+  const { status: selectedStatus, setStatus } = useRequestFilterStatus();
 
   const [optimisticStatusMap, setOptimisticStatusMap] = useState<
     Record<string, RequestStatus>
@@ -174,9 +174,9 @@ export function ManageRequestsTable() {
   };
 
   const filteredData =
-    filter === "all"
+    selectedStatus === "all"
       ? mergedData
-      : mergedData?.filter((r) => r.status === filter);
+      : mergedData?.filter((r) => r.status === selectedStatus);
 
   return (
     <div className="w-full space-y-4">
@@ -190,8 +190,8 @@ export function ManageRequestsTable() {
 
         <div className="mt-4">
           <RequestFilterTabs
-            value={filter}
-            onChange={setFilter}
+            value={selectedStatus}
+            onChange={setStatus}
             counts={statusCounts}
           />
         </div>

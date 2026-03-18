@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
-import { type Request, RequestStatus } from "@/entities/request";
+import { useMemo } from "react";
+import type { Request } from "@/entities/request";
 import { useProjectsQuery } from "@/features/project/queries/use-projects-query";
-import type { RequestFilterStatus } from "../components/request-status-tab";
+
 import { useDeleteMyRequestByIdMutation } from "../mutations/use-delete-my-request-by-id-mutation";
 import { useMyRequestsQuery } from "../queries/use-my-requests-query";
+import { useRequestFilterStatus } from "./use-request-filter-status";
 
 export type RequestWithProject = Request & {
   projectName: string;
@@ -11,9 +12,7 @@ export type RequestWithProject = Request & {
 };
 
 export function useMeRequestTable() {
-  const [status, setStatus] = useState<RequestFilterStatus>(
-    RequestStatus.Pending,
-  );
+  const { status: selectedStatus, setStatus } = useRequestFilterStatus();
 
   const requestsQuery = useMyRequestsQuery();
   const projectsQuery = useProjectsQuery();
@@ -45,9 +44,9 @@ export function useMeRequestTable() {
   }, [requestsQuery.data, projectsQuery.data]);
 
   const filteredData = useMemo(() => {
-    if (status === "all") return allData;
-    return allData.filter((row) => row.status === status);
-  }, [allData, status]);
+    if (selectedStatus === "all") return allData;
+    return allData.filter((row) => row.status === selectedStatus);
+  }, [allData, selectedStatus]);
 
   const deleteMutation = useDeleteMyRequestByIdMutation();
 
@@ -57,7 +56,7 @@ export function useMeRequestTable() {
   };
 
   return {
-    status,
+    status: selectedStatus,
     setStatus,
     allData,
     data: filteredData,

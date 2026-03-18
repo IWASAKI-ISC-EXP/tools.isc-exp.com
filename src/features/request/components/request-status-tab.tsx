@@ -10,8 +10,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RequestStatus } from "@/entities/request";
 import { cn } from "@/lib/utils";
-
-export type RequestFilterStatus = "all" | RequestStatus;
+import type { RequestFilterStatus } from "../hooks/use-request-filter-status";
 
 const STATUSES = [
   { label: "すべて", value: "all" },
