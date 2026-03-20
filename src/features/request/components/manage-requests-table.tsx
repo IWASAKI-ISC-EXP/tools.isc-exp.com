@@ -1,7 +1,7 @@
 "use client";
 
+import { Save, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -13,73 +13,120 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { type Request, RequestStatus } from "@/entities/request";
-import { Role } from "@/entities/role";
+import { hasEnoughRole, Role } from "@/entities/role";
 import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-id-query";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
-import { useRequests } from "../queries/use-request";
-import { RequestStatusBadge } from "./request-status-badge";
 import {
   type RequestFilterStatus,
-  RequestFilterTabs,
-} from "./request-status-tab";
+  useRequestFilterStatus,
+} from "../hooks/use-request-filter-status";
+import { useRequests } from "../queries/use-request";
+import { RequestStatusBadge } from "./request-status-badge";
+import { RequestStatusChangeConfirmDialog } from "./request-status-change-confirm-dialog";
+import { RequestFilterTabs } from "./request-status-tab";
 
 const SKELETON_ROW_KEYS = ["row-1", "row-2", "row-3", "row-4", "row-5"];
 
 function ActionButtons({
   requestId,
   status,
+  requesterName,
+  projectName,
+  projectExpense,
+  onOptimisticUpdate,
 }: {
   requestId: string;
   status: RequestStatus;
+  requesterName: string;
+  projectName?: string;
+  projectExpense?: number;
+  onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 }) {
-  const { mutate, isPending } = useUpdateRequestStatusByIdMutation();
+  const { mutate } = useUpdateRequestStatusByIdMutation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const self = useSelf();
 
-  const isTeacherOrHigher = self?.role === Role.Teacher;
+  const isTeacher = self?.role === Role.Teacher;
+  const isLeaderOrHigher = hasEnoughRole(self?.role, Role.Leader);
 
   const handleUpdate = (nextStatus: RequestStatus) => {
-    mutate({
-      id: requestId,
-      status: nextStatus,
-    });
+    const prevStatus = status;
+    setIsSubmitting(true);
+    onOptimisticUpdate(requestId, nextStatus);
+    mutate(
+      {
+        id: requestId,
+        status: nextStatus,
+      },
+      {
+        onError() {
+          onOptimisticUpdate(requestId, prevStatus);
+        },
+        onSettled() {
+          setIsSubmitting(false);
+        },
+      },
+    );
   };
 
   if (status === RequestStatus.Pending) {
     return (
       <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          className="text-red-600"
-          disabled={isPending}
-          onClick={() => handleUpdate(RequestStatus.Rejected)}
-        >
-          却下
-        </Button>
+        <RequestStatusChangeConfirmDialog
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
+          isSubmitting={isSubmitting}
+          canManageRequests={isLeaderOrHigher}
+          handleUpdate={handleUpdate}
+          targetRequestStatus={RequestStatus.Rejected}
+          buttonIcon={<Trash2 className="mr-2 h-4 w-4" />}
+          buttonText="却下"
+          buttonClassName="text-red-600 bg-white hover:text-red-700"
+          dialogTitle="却下確認"
+          dialogDescription="申請を却下します。よろしいですか？"
+          confirmButtonClassName="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
+        />
 
-        <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isPending}
-          onClick={() => handleUpdate(RequestStatus.Approved)}
-        >
-          承認
-        </Button>
+        <RequestStatusChangeConfirmDialog
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
+          isSubmitting={isSubmitting}
+          canManageRequests={isLeaderOrHigher}
+          handleUpdate={handleUpdate}
+          targetRequestStatus={RequestStatus.Approved}
+          buttonIcon={<Save className="mr-2 h-4 w-4" />}
+          buttonText="承認"
+          buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+          dialogTitle="承認確認"
+          dialogDescription="申請を承認します。よろしいですか？"
+          confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+        />
       </div>
     );
   }
 
   if (status === RequestStatus.Approved) {
     return (
-      <div className="flex justify-end">
-        <Button
-          className="bg-indigo-600 hover:bg-indigo-700"
-          disabled={isPending || !isTeacherOrHigher}
-          onClick={() => handleUpdate(RequestStatus.Paid)}
-        >
-          精算
-        </Button>
-      </div>
+      <RequestStatusChangeConfirmDialog
+        projectName={projectName || ""}
+        requesterName={requesterName}
+        projectExpense={projectExpense || 0}
+        isSubmitting={isSubmitting}
+        canManageRequests={isTeacher}
+        handleUpdate={handleUpdate}
+        targetRequestStatus={RequestStatus.Paid}
+        buttonIcon={<Save className="mr-2 h-4 w-4" />}
+        buttonText="精算"
+        buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
+        dialogTitle="精算確認"
+        dialogDescription="交通費を精算します。よろしいですか？"
+        confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+      />
     );
   }
 
@@ -88,24 +135,48 @@ function ActionButtons({
 
 export function ManageRequestsTable() {
   const [keyword, setKeyword] = useState("");
-  const [filter, setFilter] = useState<RequestFilterStatus>("all");
+
+  const { status: selectedStatus, setStatus } = useRequestFilterStatus();
+
+  const [optimisticStatusMap, setOptimisticStatusMap] = useState<
+    Record<string, RequestStatus>
+  >({});
 
   const { data, isLoading } = useRequests();
 
+  const mergedData = data?.map((r) => ({
+    ...r,
+    status: optimisticStatusMap[r.id] ?? r.status,
+  }));
+
+  const handleOptimisticUpdate = (
+    requestId: string,
+    nextStatus: RequestStatus,
+  ) => {
+    setOptimisticStatusMap((prev) => ({
+      ...prev,
+      [requestId]: nextStatus,
+    }));
+  };
+
   const statusCounts: Record<RequestFilterStatus, number> = {
-    all: data?.length ?? 0,
+    all: mergedData?.length ?? 0,
     [RequestStatus.Pending]:
-      data?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Pending).length ?? 0,
     [RequestStatus.Approved]:
-      data?.filter((r) => r.status === RequestStatus.Approved).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Approved).length ??
+      0,
     [RequestStatus.Paid]:
-      data?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Paid).length ?? 0,
     [RequestStatus.Rejected]:
-      data?.filter((r) => r.status === RequestStatus.Rejected).length ?? 0,
+      mergedData?.filter((r) => r.status === RequestStatus.Rejected).length ??
+      0,
   };
 
   const filteredData =
-    filter === "all" ? data : data?.filter((r) => r.status === filter);
+    selectedStatus === "all"
+      ? mergedData
+      : mergedData?.filter((r) => r.status === selectedStatus);
 
   return (
     <div className="w-full space-y-4">
@@ -119,8 +190,8 @@ export function ManageRequestsTable() {
 
         <div className="mt-4">
           <RequestFilterTabs
-            value={filter}
-            onChange={setFilter}
+            value={selectedStatus}
+            onChange={setStatus}
             counts={statusCounts}
           />
         </div>
@@ -133,8 +204,8 @@ export function ManageRequestsTable() {
               <TableHead>ステータス</TableHead>
               <TableHead>申請者</TableHead>
               <TableHead>案件名</TableHead>
-              <TableHead>参加日時</TableHead>
-              <TableHead>申請日</TableHead>
+              <TableHead>参加日</TableHead>
+              <TableHead>申請日時</TableHead>
               <TableHead>金額</TableHead>
               <TableHead>備考</TableHead>
               <TableHead>操作</TableHead>
@@ -182,7 +253,12 @@ export function ManageRequestsTable() {
               </TableRow>
             ) : (
               filteredData?.map((r) => (
-                <RequestRow keyword={keyword} key={r.id} r={r} />
+                <RequestRow
+                  keyword={keyword}
+                  key={r.id}
+                  r={r}
+                  onOptimisticUpdate={handleOptimisticUpdate}
+                />
               ))
             )}
           </TableBody>
@@ -195,11 +271,18 @@ export function ManageRequestsTable() {
 type RequestRowProps = {
   r: Request;
   keyword: string;
+  onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-function RequestRow({ r, keyword }: RequestRowProps) {
-  const { data: project } = useProjectByIdQuery(r.projectId);
-  const { data: user } = useUserByIdQuery(r.requestedBy);
+function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
+  const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
+    r.projectId,
+  );
+
+  const { data: user, isLoading: isUserLoading } = useUserByIdQuery(
+    r.requestedBy,
+  );
+
   const formatDateJP = (date: Date) =>
     date.toLocaleDateString("ja-JP", {
       year: "numeric",
@@ -207,35 +290,71 @@ function RequestRow({ r, keyword }: RequestRowProps) {
       day: "numeric",
     });
 
-  if (!user?.name.includes(keyword)) {
+  const isRowLoading = isUserLoading || isProjectLoading;
+
+  if (user && !user.name.includes(keyword)) {
     return null;
   }
 
   return (
     <TableRow>
       <TableCell>
-        <RequestStatusBadge status={r.status} />
-      </TableCell>
-
-      <TableCell>{user ? user.name : ""}</TableCell>
-
-      <TableCell className="whitespace-pre-line">
-        {project?.name}
-        <br />
-      </TableCell>
-
-      <TableCell>{formatDateJP(r.date)}</TableCell>
-
-      <TableCell>{formatDateJP(r.createdAt)}</TableCell>
-
-      <TableCell>{project?.expense}円</TableCell>
-
-      <TableCell className="whitespace-pre-line text-gray-600 text-sm">
-        {r.memo}
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-20" />
+        ) : (
+          <RequestStatusBadge status={r.status} />
+        )}
       </TableCell>
 
       <TableCell>
-        <ActionButtons requestId={r.id} status={r.status} />
+        {isRowLoading ? <Skeleton className="h-6 w-24" /> : user?.name}
+      </TableCell>
+
+      <TableCell className="whitespace-pre-line">
+        {isRowLoading ? <Skeleton className="h-6 w-32" /> : project?.name}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-28" />
+        ) : (
+          formatDateJP(r.date)
+        )}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-28" />
+        ) : (
+          formatDateJP(r.createdAt)
+        )}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-6 w-20" />
+        ) : (
+          `${project?.expense?.toLocaleString()}円`
+        )}
+      </TableCell>
+
+      <TableCell className="whitespace-pre-line text-gray-600 text-sm">
+        {isRowLoading ? <Skeleton className="h-6 w-40" /> : r.memo}
+      </TableCell>
+
+      <TableCell>
+        {isRowLoading ? (
+          <Skeleton className="h-8 w-24" />
+        ) : (
+          <ActionButtons
+            requestId={r.id}
+            status={r.status}
+            requesterName={user?.name || ""}
+            projectName={project?.name || ""}
+            projectExpense={project?.expense}
+            onOptimisticUpdate={onOptimisticUpdate}
+          />
+        )}
       </TableCell>
     </TableRow>
   );

@@ -2,6 +2,11 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -21,6 +26,20 @@ type Props = {
   loading?: boolean;
   onDelete: (id: string) => void;
   isDeleting?: boolean;
+};
+type LoadingCellProps<T> = {
+  value: T | undefined;
+  render: (value: T) => React.ReactNode;
+  skeleton: React.ReactNode;
+};
+
+export const LoadingCell = <T,>({
+  value,
+  render,
+  skeleton,
+}: LoadingCellProps<T>) => {
+  if (value == null) return <>{skeleton}</>;
+  return <>{render(value)}</>;
 };
 
 export function MeRequestsTable({
@@ -46,16 +65,16 @@ export function MeRequestsTable({
           <TableRow>
             <TableHead className="px-2 py-2 text-left">ステータス</TableHead>
             <TableHead className="px-2 py-2 text-left">案件内容</TableHead>
-            <TableHead className="px-2 py-2 text-left">参加日時</TableHead>
-            <TableHead className="px-2 py-2 text-left">申請日</TableHead>
-            <TableHead className="px-2 py-2 text-right">金額</TableHead>
+            <TableHead className="px-2 py-2 text-left">参加日</TableHead>
+            <TableHead className="px-2 py-2 text-left">金額</TableHead>
             <TableHead className="px-2 py-2 text-left">備考</TableHead>
+            <TableHead className="px-2 py-2 text-left">申請日時</TableHead>
             <TableHead className="px-2 py-2 text-left">削除</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody className="bg-white">
-          {loading ? (
+          {loading && data.length === 0 ? (
             Array.from(
               { length: 5 },
               (_, index) => `skeleton-row-${index}`,
@@ -76,39 +95,81 @@ export function MeRequestsTable({
               return (
                 <TableRow key={row.id}>
                   <TableCell className="py-4">
-                    <RequestStatusBadge status={row.status} />
+                    <LoadingCell
+                      value={row.status}
+                      skeleton={<Skeleton className="h-5 w-32" />}
+                      render={(v) => <RequestStatusBadge status={v} />}
+                    />
                   </TableCell>
 
                   <TableCell className="py-4 font-medium">
-                    {row.projectName}
+                    <LoadingCell
+                      value={row.projectName}
+                      skeleton={<Skeleton className="h-5 w-32" />}
+                      render={(v) => v}
+                    />
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
-                    {formatDateJP(row.date)}
+                    <LoadingCell
+                      value={row.date}
+                      skeleton={<Skeleton className="h-5 w-24" />}
+                      render={(v) => (
+                        <time dateTime={v.toISOString().slice(0, 10)}>
+                          {formatDateJP(v)}
+                        </time>
+                      )}
+                    />
                   </TableCell>
 
                   <TableCell className="whitespace-nowrap py-4">
-                    {formatDateJP(row.createdAt)}
-                  </TableCell>
-
-                  <TableCell className="py-4 text-right">
-                    ¥{row.expense.toLocaleString()}
+                    <LoadingCell
+                      value={row.expense}
+                      skeleton={<Skeleton className="ml-auto h-5 w-20" />}
+                      render={(v) => <p>¥{v.toLocaleString()}</p>}
+                    />
                   </TableCell>
 
                   <TableCell className="py-4 text-gray-600">
                     {row.memo}
                   </TableCell>
 
+                  <TableCell className="whitespace-nowrap py-4">
+                    <LoadingCell
+                      value={row.createdAt}
+                      skeleton={<Skeleton className="ml-auto h-5 w-20" />}
+                      render={(v) => (
+                        <p className="text-gray-600">
+                          申請日：
+                          <br></br>
+                          <time dateTime={v.toISOString().slice(0, 10)}>
+                            {formatDateJP(v)}
+                          </time>
+                        </p>
+                      )}
+                    />
+                  </TableCell>
+
                   <TableCell className="py-4">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => setDeleteTargetId(row.id)}
-                      disabled={!canDelete || isDeleting}
-                      className="text-red-600 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="link"
+                          onClick={() => setDeleteTargetId(row.id)}
+                          disabled={!canDelete || isDeleting}
+                          className="text-red-600 hover:text-red-700 disabled:opacity-40"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </HoverCardTrigger>
+                      {!canDelete && (
+                        <HoverCardContent className="flex items-center gap-1">
+                          <RequestStatusBadge status={row.status} />
+                          <span>は削除できません</span>
+                        </HoverCardContent>
+                      )}
+                    </HoverCard>
                   </TableCell>
                 </TableRow>
               );

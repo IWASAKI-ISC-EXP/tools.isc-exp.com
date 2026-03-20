@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { User } from "@/entities/self";
+import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 import { useDepartmentByIdQuery } from "../queries/use-department-by-id-query";
 import { useDepartmentsQuery } from "../queries/use-departments-query";
 import { useUsersQuery } from "../queries/use-users-query";
@@ -44,11 +45,11 @@ export function ManageUserPageContent() {
       <Table className="mt-4 overflow-hidden rounded-md bg-white">
         <TableHeader className="bg-gray-50">
           <TableRow>
-            <TableHead>名前</TableHead>
-            <TableHead>入学年度</TableHead>
-            <TableHead>学科</TableHead>
-            <TableHead>現在の権限</TableHead>
-            <TableHead>操作</TableHead>
+            <TableHead className="w-40">名前</TableHead>
+            <TableHead className="w-24">入学年度</TableHead>
+            <TableHead className="w-40">学科</TableHead>
+            <TableHead className="w-24">現在の権限</TableHead>
+            <TableHead className="w-24">操作</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -84,7 +85,7 @@ function UserRow({ user }: { user: User }) {
       <TableCell className="py-4">
         {department?.name || <Skeleton className="h-4 w-20" />}
       </TableCell>
-      <TableCell className="py-4">{user.role}</TableCell>
+      <TableCell className="py-4">{convertRoleJapanese(user.role)}</TableCell>
       <TableCell className="py-4">
         <UpdateUserForm user={user} />
       </TableCell>

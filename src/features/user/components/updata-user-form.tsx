@@ -1,6 +1,7 @@
 "use client";
 
 import { Save, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,20 +22,28 @@ import {
 } from "@/components/ui/select";
 import { Role } from "@/entities/role";
 import type { User } from "@/entities/self";
+import { convertRoleJapanese } from "@/lib/convert-role-japanese";
+import { useSelf } from "../hooks/use-self";
 import { useUpdateUserByIdMutation } from "../mutations/use-update-user-mutation";
-
 export function UpdateUserForm({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [userRole, setUserRole] = useState(user.role);
   const roledeta = Role;
   const mutation = useUpdateUserByIdMutation();
+  const self = useSelf();
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
 
     await mutation.mutateAsync({ userId: user.uid, role: userRole });
+
+    if (self?.uid === user.uid) {
+      router.refresh();
+    }
+
     setIsOpen(false);
     setSubmitting(false);
   }
@@ -65,7 +74,7 @@ export function UpdateUserForm({ user }: { user: User }) {
                 {roledeta &&
                   Object.values(Role).map((role) => (
                     <SelectItem value={role} key={role}>
-                      {role}
+                      {convertRoleJapanese(role)}
                     </SelectItem>
                   ))}
               </SelectContent>
