@@ -1,11 +1,11 @@
 import "server-only";
 import { firestore } from "firebase-admin";
 import v from "@/entities/valibot";
-import { Request } from "./request";
 import { ProjectWithTimestamp } from "./project.server";
+import { Request } from "./request";
 
 export const RequestWithTimestamp = v.object({
-  ...v.omit(Request, ["project", "date", "createdAt"]).entries,
+  ...Request.entries,
   project: ProjectWithTimestamp,
   date: v.custom<firestore.Timestamp>(
     (data) => data instanceof firestore.Timestamp,

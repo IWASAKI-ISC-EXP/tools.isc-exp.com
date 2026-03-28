@@ -1,5 +1,6 @@
 import v from "@/entities/valibot";
 import { User } from "./user";
+import { schemaVersion } from "./schema-version";
 
 export enum ProjectStatus {
   Exp = "exp",
@@ -22,7 +23,7 @@ export const ProjectStatusSchema = v.enum(ProjectStatus);
 export type ProjectStatusSchema = v.InferOutput<typeof ProjectStatusSchema>;
 
 export const Project = v.object({
-  _schemaVersion: v.literal(1),
+  _schemaVersion: schemaVersion,
   id: v.string(),
   name: ProjectName,
   status: ProjectStatusSchema,

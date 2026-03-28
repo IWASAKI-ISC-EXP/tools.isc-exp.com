@@ -1,5 +1,6 @@
 import { RoleSchema } from "@/entities/role";
 import v from "@/entities/valibot";
+import { schemaVersion } from "./schema-version";
 
 export const Name = v.pipe(
   v.string(),
@@ -14,7 +15,7 @@ export const EnrollmentYear = v.pipe(
 export type EnrollmentYear = v.InferOutput<typeof EnrollmentYear>;
 
 export const User = v.object({
-  _schemaVersion: v.literal(1),
+  _schemaVersion: schemaVersion,
   id: v.string(),
   name: Name,
   enrollmentYear: EnrollmentYear,
