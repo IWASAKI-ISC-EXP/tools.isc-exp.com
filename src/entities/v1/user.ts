@@ -1,3 +1,4 @@
+import { Department } from "@/entities/department";
 import { RoleSchema } from "@/entities/role";
 import v from "@/entities/valibot";
 import { schemaVersion } from "./schema-version";
@@ -19,6 +20,7 @@ export const User = v.object({
   id: v.string(),
   name: Name,
   enrollmentYear: EnrollmentYear,
+  department: Department,
   role: RoleSchema,
 });
 export type User = v.InferOutput<typeof User>;
