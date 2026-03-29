@@ -24,5 +24,5 @@ export async function getUsers(): Promise<User[]> {
   const doc = await adminFirestore.collection(collectionKeys.users).get();
   if (doc.empty) return [];
 
-  return doc.docs.map((doc) => v.parse(User, { id: doc.id, ...doc.data() })); // 変更箇所: uid → id（v1 の User スキーマに合わせる）
+  return doc.docs.map((doc) => v.parse(User, { ...doc.data(), id: doc.id })); // 変更箇所: uid → id（v1 の User スキーマに合わせる）、data展開後にidで上書き
 }

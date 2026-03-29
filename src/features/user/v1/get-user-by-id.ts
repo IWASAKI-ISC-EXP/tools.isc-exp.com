@@ -26,5 +26,5 @@ export async function getUserById(userId: string): Promise<User | null> {
     .get();
   if (!doc.exists) return null;
 
-  return v.parse(User, { id: doc.id, ...doc.data() }); // 変更箇所: uid → id（v1 の User スキーマに合わせる）
+  return v.parse(User, { ...doc.data(), id: doc.id }); // 変更箇所: uid → id（v1 の User スキーマに合わせる）、data展開後にidで上書き
 }

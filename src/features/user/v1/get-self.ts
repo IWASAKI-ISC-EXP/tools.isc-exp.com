@@ -54,6 +54,6 @@ export const getSelf = cache(async (): Promise<Self | null> => {
 
   if (!userDoc.exists) return null;
 
-  // 変更箇所: v1 の Self スキーマでパース（id フィールドを userDoc.id から追加）
-  return v.parse(Self, { ...authSelf, id: userDoc.id, ...userDoc.data() });
+  // 変更箇所: v1 の Self スキーマでパース（data展開後にidで上書き）
+  return v.parse(Self, { ...authSelf, ...userDoc.data(), id: userDoc.id });
 });

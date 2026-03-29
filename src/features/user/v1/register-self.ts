@@ -4,6 +4,7 @@ import { collectionKeys, googleLoginAllowedDomain } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { Role } from "@/entities/role";
 import { UserInfo } from "@/entities/self";
+import { schemaVersion } from "@/entities/v1/schema-version"; // 変更箇所: schemaVersion を共通定義から使用
 import type { Self } from "@/entities/v1/self"; // 変更箇所: v1 の Self 型を使用
 import v from "@/entities/valibot";
 import { adminFirestore } from "@/firebase/admin";
@@ -37,7 +38,7 @@ export async function registerSelf(
   // Users コレクションに情報を登録する
   // 変更箇所: _schemaVersion を追加し、departmentId の代わりに Department オブジェクトを保存
   const userData = {
-    _schemaVersion: 1 as const,
+    _schemaVersion: schemaVersion.literal, // 変更箇所: 数値直書きではなく schemaVersion から参照
     name: userInfo.name,
     enrollmentYear: userInfo.enrollmentYear,
     department,

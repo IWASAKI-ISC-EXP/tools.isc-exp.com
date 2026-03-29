@@ -34,8 +34,8 @@ export async function updateUserRoleById({
   await docRef.update({ role });
 
   return v.parse(User, {
-    id: userDoc.id, // 変更箇所: uid → id（v1 の User スキーマに合わせる）
     ...userDoc.data(),
+    id: userDoc.id, // 変更箇所: uid → id（v1 の User スキーマに合わせる）、data展開後にidで上書き
     role,
   });
 }
