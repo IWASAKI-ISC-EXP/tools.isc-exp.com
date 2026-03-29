@@ -1,5 +1,4 @@
 "use server";
-import "server-only"; // 変更箇所: v1 の共通パターン
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { collectionKeys, cookieKeys } from "@/constants";

@@ -1,5 +1,4 @@
 "use server";
-import "server-only"; // 変更箇所: v1 の共通パターン
 
 import { collectionKeys } from "@/constants";
 import { hasEnoughRole, Role } from "@/entities/role";

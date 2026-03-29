@@ -1,5 +1,4 @@
 "use server";
-import "server-only"; // 変更箇所: v1 の共通パターン
 import { collectionKeys, googleLoginAllowedDomain } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { Role } from "@/entities/role";
