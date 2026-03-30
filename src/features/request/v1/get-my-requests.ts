@@ -20,7 +20,7 @@ export async function getMyRequests(): Promise<Request[]> {
 
   const snapshot = await adminFirestore
     .collection(collectionKeys.requests)
-    .where("requestedBy.id", "==", self.id) // 変更箇所: requestedBy が User オブジェクトになったため、ネストしたフィールドで絞り込み
+    .where("requestedBy.uid", "==", self.uid) // 変更箇所: requestedBy が User オブジェクトになったため、ネストしたフィールドで絞り込み
     .get();
 
   return snapshot.docs.map((doc) =>
