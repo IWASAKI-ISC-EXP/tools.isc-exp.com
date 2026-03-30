@@ -3,6 +3,8 @@
 import { firestore } from "firebase-admin";
 import { collectionKeys } from "@/constants";
 import { type Request, RequestStatus } from "@/entities/v1/request"; // 変更箇所
+import { User } from "@/entities/v1/self"; // 変更箇所
+import { schemaVersion } from "@/entities/v1/schema-version"; // 変更箇所
 import {
   RequestWithTimestamp,
   RequestWithTimestampTransformer,
@@ -28,16 +30,9 @@ export async function createRequest(
 
   const safeRequest = v.parse(v.omit(RequestWithTimestamp, ["id"]), {
     ...unsafeRequest,
-    _schemaVersion: 1, // 変更箇所
+    _schemaVersion: schemaVersion.literal, // 変更箇所
     // 変更箇所: requestedBy を uid 文字列から User オブジェクトに変更
-    requestedBy: {
-      _schemaVersion: self._schemaVersion,
-      id: self.id,
-      name: self.name,
-      enrollmentYear: self.enrollmentYear,
-      department: self.department,
-      role: self.role,
-    },
+    requestedBy: v.parse(User, self), // 変更箇所
     // 変更箇所: project.createdAt を Date から Timestamp に変換して embed
     project: {
       ...unsafeRequest.project,

@@ -4,10 +4,12 @@ import { firestore } from "firebase-admin";
 import { collectionKeys } from "@/constants";
 import { hasEnoughRole, Role } from "@/entities/role";
 import type { Project } from "@/entities/v1/project"; // 変更箇所
+import { User } from "@/entities/v1/self"; // 変更箇所
 import {
   ProjectWithTimestamp,
   ProjectWithTimestampTransformer,
 } from "@/entities/v1/project.server"; // 変更箇所
+import { schemaVersion } from "@/entities/v1/schema-version"; // 変更箇所
 import v from "@/entities/valibot";
 import { ForbiddenError, UnauthorizedError } from "@/errors/auth";
 import { adminFirestore } from "@/firebase/admin";
@@ -33,17 +35,10 @@ export async function createProject(
 
   const safeProject = v.parse(v.omit(ProjectWithTimestamp, ["id"]), {
     ...unsafeProject,
-    _schemaVersion: 1, // 変更箇所
+    _schemaVersion: schemaVersion.literal, // 変更箇所
     createdAt: firestore.Timestamp.now(),
     // 変更箇所: createdBy を uid 文字列から User オブジェクトに変更
-    createdBy: {
-      _schemaVersion: self._schemaVersion,
-      id: self.id,
-      name: self.name,
-      enrollmentYear: self.enrollmentYear,
-      department: self.department,
-      role: self.role,
-    },
+    createdBy: v.parse(User, self), // 変更箇所
   });
 
   const createdDocRef = await adminFirestore
