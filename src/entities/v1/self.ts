@@ -1,7 +1,7 @@
 import { Department } from "@/entities/department";
 import { RoleSchema } from "@/entities/role";
 import v from "@/entities/valibot";
-import { User } from "./user";
+import { schemaVersion } from "./schema-version";
 
 // Firebase Auth から取得する情報
 export const AuthSelf = v.object({
@@ -11,6 +11,28 @@ export const AuthSelf = v.object({
   picture: v.optional(v.string()),
 });
 export type AuthSelf = v.InferOutput<typeof AuthSelf>;
+
+export const Name = v.pipe(
+  v.string(),
+  v.minLength(1, "名前を入力してください。"),
+);
+export type Name = v.InferOutput<typeof Name>;
+
+export const EnrollmentYear = v.pipe(
+  v.number(),
+  v.minValue(1, "入学年度を選択してください"),
+);
+export type EnrollmentYear = v.InferOutput<typeof EnrollmentYear>;
+
+export const User = v.object({
+  _schemaVersion: schemaVersion,
+  id: v.string(),
+  name: Name,
+  enrollmentYear: EnrollmentYear,
+  department: Department,
+  role: RoleSchema,
+});
+export type User = v.InferOutput<typeof User>;
 
 // オンボーディングフォームの入力型
 export const UserInfo = v.object({
