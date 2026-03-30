@@ -2,8 +2,7 @@
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { collectionKeys, cookieKeys } from "@/constants";
-import { AuthSelf } from "@/entities/self";
-import { Self } from "@/entities/v1/self"; // 変更箇所: v1 の Self 型を使用
+import { AuthSelf, Self } from "@/entities/v1/self"; // 変更箇所: v1 の AuthSelf / Self 型を使用
 import v from "@/entities/valibot";
 import { adminFirestore, firebaseAdminAuth } from "@/firebase/admin";
 

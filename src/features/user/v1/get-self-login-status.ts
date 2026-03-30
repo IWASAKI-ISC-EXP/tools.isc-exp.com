@@ -1,8 +1,7 @@
 "use server";
 import { cache } from "react";
 import { LoginStatus } from "@/entities/login";
-import type { AuthSelf } from "@/entities/self";
-import type { Self } from "@/entities/v1/self"; // 変更箇所: v1 の Self 型を使用
+import type { AuthSelf, Self } from "@/entities/v1/self"; // 変更箇所: v1 の AuthSelf / Self 型を使用
 import { getAuthSelf, getSelf } from "./get-self"; // 変更箇所: v1 の getSelf を使用
 
 /**

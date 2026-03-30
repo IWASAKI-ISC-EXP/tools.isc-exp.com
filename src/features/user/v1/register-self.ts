@@ -2,12 +2,10 @@
 import { collectionKeys, googleLoginAllowedDomain } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { Role } from "@/entities/role";
-import { UserInfo } from "@/entities/self";
 import { schemaVersion } from "@/entities/v1/schema-version"; // 変更箇所: schemaVersion を共通定義から使用
-import type { Self } from "@/entities/v1/self"; // 変更箇所: v1 の Self 型を使用
+import { type Self, UserInfo } from "@/entities/v1/self"; // 変更箇所: v1 の UserInfo / Self 型を使用
 import v from "@/entities/valibot";
 import { adminFirestore } from "@/firebase/admin";
-import { getDepartmentById } from "../get-department-by-id";
 import { getSelfLoginStatus } from "./get-self-login-status"; // 変更箇所: v1 版の getSelfLoginStatus を使用
 
 /**
@@ -31,17 +29,11 @@ export async function registerSelf(
     throw new NotAllowedEmailDomainError();
   }
 
-  const department = await getDepartmentById(userInfo.departmentId);
-  if (!department) return null; // 部署が存在しない場合は null を返す （通常はクライアントサイドで弾かれるはず）
-
   // Users コレクションに情報を登録する
-  // 変更箇所: _schemaVersion を追加し、departmentId の代わりに Department オブジェクトを保存
+  // 変更箇所: _schemaVersion を追加し、v1 UserInfo は department オブジェクトを直接持つため getDepartmentById 不要
   const userData = {
+    ...userInfo,
     _schemaVersion: schemaVersion.literal, // 変更箇所: 数値直書きではなく schemaVersion から参照
-    name: userInfo.name,
-    enrollmentYear: userInfo.enrollmentYear,
-    department,
-    role: userInfo.role,
   };
 
   await adminFirestore
