@@ -2,7 +2,7 @@
 
 import { collectionKeys } from "@/constants";
 import { hasEnoughRole, Role } from "@/entities/role";
-import { User } from "@/entities/v1/user"; // 変更箇所: v1 の User 型を使用
+import { User } from "@/entities/v1/self"; // 変更箇所: v1 の User 型を使用
 import v from "@/entities/valibot";
 import { ForbiddenError, UnauthorizedError } from "@/errors/auth";
 import { adminFirestore } from "@/firebase/admin";
