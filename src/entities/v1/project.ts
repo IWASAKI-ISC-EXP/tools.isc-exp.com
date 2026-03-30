@@ -1,6 +1,6 @@
 import v from "@/entities/valibot";
 import { schemaVersion } from "./schema-version";
-import { User } from "./user";
+import { User } from "./self";
 
 export enum ProjectStatus {
   Exp = "exp",

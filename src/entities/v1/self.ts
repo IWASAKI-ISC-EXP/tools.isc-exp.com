@@ -24,24 +24,21 @@ export const EnrollmentYear = v.pipe(
 );
 export type EnrollmentYear = v.InferOutput<typeof EnrollmentYear>;
 
-export const User = v.object({
-  _schemaVersion: schemaVersion,
-  id: v.string(),
+// オンボーディングフォームの入力型
+export const UserInfo = v.object({
   name: Name,
   enrollmentYear: EnrollmentYear,
   department: Department,
   role: RoleSchema,
 });
-export type User = v.InferOutput<typeof User>;
-
-// オンボーディングフォームの入力型
-export const UserInfo = v.object({
-  name: User.entries.name,
-  enrollmentYear: User.entries.enrollmentYear,
-  department: Department,
-  role: RoleSchema,
-});
 export type UserInfo = v.InferOutput<typeof UserInfo>;
+
+export const User = v.object({
+  _schemaVersion: schemaVersion,
+  uid: AuthSelf.entries.uid,
+  ...UserInfo.entries,
+});
+export type User = v.InferOutput<typeof User>;
 
 // ログイン済みユーザーの完全情報（Auth + Firestore User）
 export const Self = v.object({

@@ -1,7 +1,7 @@
 import v from "@/entities/valibot";
 import { Project } from "./project";
 import { schemaVersion } from "./schema-version";
-import { User } from "./user";
+import { User } from "./self";
 
 export enum RequestStatus {
   Pending = "pending",
