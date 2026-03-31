@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/constants";
-import { getUsers } from "../get-users";
+import { getUsers } from "../v1/get-users";
 
 /**
  * 全ユーザーを取得するための Query Hook

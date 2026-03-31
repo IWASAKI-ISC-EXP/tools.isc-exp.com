@@ -21,10 +21,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Role } from "@/entities/role";
-import type { User } from "@/entities/self";
+import type { User } from "@/entities/v1/self";
 import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 import { useSelf } from "../hooks/use-self";
 import { useUpdateUserByIdMutation } from "../mutations/use-update-user-mutation";
+
 export function UpdateUserForm({ user }: { user: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
@@ -38,9 +39,9 @@ export function UpdateUserForm({ user }: { user: User }) {
     e.preventDefault();
     setSubmitting(true);
 
-    await mutation.mutateAsync({ userId: user.uid, role: userRole });
+    await mutation.mutateAsync({ userId: user.id, role: userRole });
 
-    if (self?.uid === user.uid) {
+    if (self?.uid === user.id) {
       router.refresh();
     }
 

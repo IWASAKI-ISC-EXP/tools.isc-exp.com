@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/constants";
-import { updateUserRoleById } from "../update-user-role-by-id";
+import { updateUserRoleById } from "../v1/update-user-role-by-id";
 
 export function useUpdateUserByIdMutation() {
   const queryClient = useQueryClient();
