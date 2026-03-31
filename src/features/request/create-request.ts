@@ -7,6 +7,8 @@ import {
   RequestWithTimestamp,
   RequestWithTimestampTransformer,
 } from "@/entities/request.server";
+import { schemaVersion } from "@/entities/schema-version";
+import { User } from "@/entities/self";
 import v from "@/entities/valibot";
 import { UnauthorizedError } from "@/errors/auth";
 import { getSelf } from "@/features/user/get-self";
@@ -18,14 +20,22 @@ import { adminFirestore } from "@/firebase/admin";
  * @returns
  */
 export async function createRequest(
-  unsafeRequest: Omit<Request, "id" | "status" | "requestedBy" | "createdAt">,
+  unsafeRequest: Omit<
+    Request,
+    "_schemaVersion" | "id" | "status" | "requestedBy" | "createdAt"
+  >,
 ): Promise<Request> {
   const self = await getSelf();
   if (!self) throw new UnauthorizedError();
 
   const safeRequest = v.parse(v.omit(RequestWithTimestamp, ["id"]), {
     ...unsafeRequest,
-    requestedBy: self.uid,
+    _schemaVersion: schemaVersion.literal,
+    requestedBy: v.parse(User, self),
+    project: {
+      ...unsafeRequest.project,
+      createdAt: firestore.Timestamp.fromDate(unsafeRequest.project.createdAt),
+    },
     status: RequestStatus.Pending,
     date: firestore.Timestamp.fromDate(unsafeRequest.date),
     createdAt: firestore.Timestamp.fromDate(new Date()),

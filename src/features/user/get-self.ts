@@ -52,5 +52,5 @@ export const getSelf = cache(async (): Promise<Self | null> => {
 
   if (!userDoc.exists) return null;
 
-  return v.parse(Self, { ...authSelf, ...userDoc.data() });
+  return v.parse(Self, { ...authSelf, ...userDoc.data(), id: userDoc.id });
 });

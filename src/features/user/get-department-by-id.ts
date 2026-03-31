@@ -7,8 +7,6 @@ import { UnauthorizedError } from "@/errors/auth";
 import { adminFirestore } from "@/firebase/admin";
 import { getAuthSelf } from "./get-self";
 
-import "server-only";
-
 export const getDepartmentById = cache(
   async (id: string): Promise<Department | null> => {
     const authSelf = await getAuthSelf();

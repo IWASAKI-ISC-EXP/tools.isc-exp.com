@@ -1,4 +1,7 @@
-import v from "./valibot";
+import v from "@/entities/valibot";
+import { Project } from "./project";
+import { schemaVersion } from "./schema-version";
+import { User } from "./self";
 
 export enum RequestStatus {
   Pending = "pending",
@@ -8,13 +11,13 @@ export enum RequestStatus {
 }
 
 export const Request = v.object({
+  _schemaVersion: schemaVersion,
   id: v.string(),
-  projectId: v.string(),
-  requestedBy: v.string(),
+  project: Project,
+  requestedBy: User,
   date: v.date(),
   createdAt: v.date(),
   memo: v.string(),
   status: v.enum(RequestStatus),
 });
-
 export type Request = v.InferOutput<typeof Request>;

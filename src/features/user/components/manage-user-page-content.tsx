@@ -14,13 +14,11 @@ import {
 import type { User } from "@/entities/self";
 import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 import { useDepartmentByIdQuery } from "../queries/use-department-by-id-query";
-import { useDepartmentsQuery } from "../queries/use-departments-query";
 import { useUsersQuery } from "../queries/use-users-query";
 import { UpdateUserForm } from "./updata-user-form";
 
 export function ManageUserPageContent() {
   const [keyword, setKeyword] = useState("");
-  const { data: departments = [] } = useDepartmentsQuery();
   const { data: users, isPending: isUsersPending } = useUsersQuery();
 
   const filteredData = users?.filter(
@@ -28,10 +26,9 @@ export function ManageUserPageContent() {
       user.name.includes(keyword) ||
       user.enrollmentYear.toString().includes(keyword) ||
       user.role.includes(keyword) ||
-      departments
-        .find((d) => d.id === user.departmentId)
-        ?.name.includes(keyword),
+      user.department.name.includes(keyword),
   );
+
   return (
     <>
       <div className="mb-4">ユーザー管理</div>
@@ -68,7 +65,7 @@ export function ManageUserPageContent() {
               </TableCell>
             </TableRow>
           ) : (
-            filteredData?.map((user) => <UserRow user={user} key={user.uid} />)
+            filteredData?.map((user) => <UserRow user={user} key={user.id} />)
           )}
         </TableBody>
       </Table>
@@ -77,14 +74,11 @@ export function ManageUserPageContent() {
 }
 
 function UserRow({ user }: { user: User }) {
-  const { data: department } = useDepartmentByIdQuery(user.departmentId);
   return (
-    <TableRow key={user.uid}>
+    <TableRow key={user.id}>
       <TableCell className="py-4">{user.name}</TableCell>
       <TableCell className="py-4">{user.enrollmentYear}年</TableCell>
-      <TableCell className="py-4">
-        {department?.name || <Skeleton className="h-4 w-20" />}
-      </TableCell>
+      <TableCell className="py-4">{user.department.name}</TableCell>
       <TableCell className="py-4">{convertRoleJapanese(user.role)}</TableCell>
       <TableCell className="py-4">
         <UpdateUserForm user={user} />

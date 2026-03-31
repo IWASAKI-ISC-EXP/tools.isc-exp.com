@@ -33,8 +33,8 @@ export async function updateUserRoleById({
   await docRef.update({ role });
 
   return v.parse(User, {
-    uid: userDoc.id,
     ...userDoc.data(),
+    id: userDoc.id,
     role,
   });
 }

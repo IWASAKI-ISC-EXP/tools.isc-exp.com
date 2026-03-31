@@ -3,9 +3,14 @@ import type { AuthSelf, Self } from "@/entities/self";
 
 export function createMockSelf(self: Partial<Self> = {}): Self {
   return {
+    _schemaVersion: 1,
+    id: "user_123",
     name: "山田 太郎",
     role: Role.Member,
-    departmentId: "dept_001",
+    department: {
+      id: "dept_001",
+      name: "情報セキュリティ学科",
+    },
     enrollmentYear: 2020,
     ...createMockAuthSelf(self),
     ...self,

@@ -49,7 +49,8 @@ export function OnboardingForm() {
     await registerSelf({
       name,
       enrollmentYear,
-      departmentId,
+      // biome-ignore lint/style/noNonNullAssertion: undefined になり得ない
+      department: departments.find((dept) => dept.id === departmentId)!,
     });
     window.location.href = urls.home;
   }

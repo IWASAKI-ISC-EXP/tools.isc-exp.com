@@ -46,7 +46,7 @@ export function useNewRequestForm(onSuccess: () => void) {
     if (!canSubmit || createRequestMutation.isPending) return;
 
     createRequestMutation.mutate(
-      { projectId, date, memo },
+      { project: projects.data?.find((p) => p.id === projectId)!, date, memo },
       {
         onSuccess: () => {
           onSuccess();

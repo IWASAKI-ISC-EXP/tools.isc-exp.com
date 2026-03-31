@@ -30,7 +30,6 @@ function DropdownItem({ label, value }: DropdownItemProps) {
 
 export function UserMenu() {
   const self = useSelf();
-  const department = useDepartmentByIdQuery(self.departmentId);
 
   return (
     <DropdownMenu>
@@ -48,7 +47,7 @@ export function UserMenu() {
 
         <DropdownItem label="入学年度" value={`${self.enrollmentYear}年`} />
 
-        <DropdownItem label="学科" value={department.data?.name} />
+        <DropdownItem label="学科" value={self.department.name} />
 
         <DropdownItem label="権限" value={convertRoleJapanese(self.role)} />
 
