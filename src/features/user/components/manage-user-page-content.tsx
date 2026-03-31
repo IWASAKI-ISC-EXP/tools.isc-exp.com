@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { User } from "@/entities/v1/self";
+import type { User } from "@/entities/self";
 import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 import { useDepartmentByIdQuery } from "../queries/use-department-by-id-query";
 import { useUsersQuery } from "../queries/use-users-query";

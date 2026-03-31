@@ -2,8 +2,8 @@
 import { collectionKeys, googleLoginAllowedDomain } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { Role } from "@/entities/role";
-import { schemaVersion } from "@/entities/v1/schema-version";
-import { type Self, UserInfo } from "@/entities/v1/self";
+import { schemaVersion } from "@/entities/schema-version";
+import { type Self, UserInfo } from "@/entities/self";
 import v from "@/entities/valibot";
 import { adminFirestore } from "@/firebase/admin";
 import { getDepartmentById } from "./get-department-by-id";

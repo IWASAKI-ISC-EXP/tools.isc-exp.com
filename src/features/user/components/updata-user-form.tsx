@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Role } from "@/entities/role";
-import type { User } from "@/entities/v1/self";
+import type { User } from "@/entities/self";
 import { convertRoleJapanese } from "@/lib/convert-role-japanese";
 import { useSelf } from "../hooks/use-self";
 import { useUpdateUserByIdMutation } from "../mutations/use-update-user-mutation";

@@ -16,8 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { Request } from "@/entities/request";
 import { RequestStatus } from "@/entities/request";
-import type { Request } from "@/entities/v1/request";
 import { MeRequestsDeleteDialog } from "./me-requests-delete-dialog";
 import { RequestStatusBadge } from "./request-status-badge";
 

@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/constants";
-import { getProjects } from "../v1/get-projects";
+import { getProjects } from "../get-projects";
 
 export function useProjectsQuery() {
   return useQuery({

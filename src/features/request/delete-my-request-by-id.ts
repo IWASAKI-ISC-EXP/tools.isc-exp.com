@@ -30,7 +30,7 @@ export async function deleteMyRequestById(requestId: string): Promise<void> {
     ...requestRef.data(),
   });
 
-  if (request.requestedBy !== self.uid) throw new ForbiddenError();
+  if (request.requestedBy.id !== self.uid) throw new ForbiddenError();
 
   await adminFirestore
     .collection(collectionKeys.requests)

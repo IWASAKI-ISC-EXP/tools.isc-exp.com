@@ -1,7 +1,7 @@
 "use client";
 
 import { use } from "react";
-import type { Self } from "@/entities/v1/self";
+import type { Self } from "@/entities/self";
 import { UnauthorizedError } from "@/errors/auth";
 import { SelfContext } from "../contexts/self";
 

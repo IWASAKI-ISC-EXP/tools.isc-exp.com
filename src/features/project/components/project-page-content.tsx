@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { type Project, ProjectStatus } from "@/entities/project";
 import { RequestStatus } from "@/entities/request";
-import { type Project, ProjectStatus } from "@/entities/v1/project";
 import { AddProjectForm } from "@/features/project/components/add-project-form";
 import { useRequests } from "@/features/request/queries/use-requests";
 import { useProjectsQuery } from "../queries/use-projects-query";

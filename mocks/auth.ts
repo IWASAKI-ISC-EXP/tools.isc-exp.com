@@ -1,5 +1,5 @@
 import { Role } from "@/entities/role";
-import type { AuthSelf, Self } from "@/entities/v1/self";
+import type { AuthSelf, Self } from "@/entities/self";
 
 export function createMockSelf(self: Partial<Self> = {}): Self {
   return {

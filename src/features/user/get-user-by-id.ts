@@ -25,5 +25,5 @@ export async function getUserById(userId: string): Promise<User | null> {
     .get();
   if (!doc.exists) return null;
 
-  return v.parse(User, { uid: doc.id, ...doc.data() });
+  return v.parse(User, { ...doc.data(), id: doc.id });
 }

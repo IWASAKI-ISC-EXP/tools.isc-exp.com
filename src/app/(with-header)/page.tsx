@@ -2,7 +2,7 @@ import { FileText, FolderKanban, Settings, UsersRound } from "lucide-react";
 import { urls } from "@/constants";
 import { hasEnoughRole, Role } from "@/entities/role";
 import { ListCard } from "@/features/home/components/list-card";
-import { getSelf } from "@/features/user/v1/get-self";
+import { getSelf } from "@/features/user/get-self";
 
 export default async function () {
   const self = await getSelf();

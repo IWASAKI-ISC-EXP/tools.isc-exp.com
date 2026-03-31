@@ -12,8 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { type Request, RequestStatus } from "@/entities/request";
 import { hasEnoughRole, Role } from "@/entities/role";
-import { type Request, RequestStatus } from "@/entities/v1/request";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
 import {

@@ -25,7 +25,7 @@ import {
   ProjectName,
   ProjectStatus,
   ProjectStatusSchema,
-} from "@/entities/v1/project";
+} from "@/entities/project";
 import { useFormValue } from "@/hooks/useFormValue";
 import { toHalfWidth } from "../../../lib/to-half-width";
 import { useUpdateProjectByIdMutation } from "../mutations/use-update-project-mutation";

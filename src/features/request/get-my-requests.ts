@@ -1,11 +1,11 @@
 "use server";
 
 import { collectionKeys } from "@/constants";
-import type { Request } from "@/entities/v1/request";
-import { RequestWithTimestampTransformer } from "@/entities/v1/request.server";
+import type { Request } from "@/entities/request";
+import { RequestWithTimestampTransformer } from "@/entities/request.server";
 import v from "@/entities/valibot";
 import { UnauthorizedError } from "@/errors/auth";
-import { getSelf } from "@/features/user/v1/get-self";
+import { getSelf } from "@/features/user/get-self";
 import { adminFirestore } from "@/firebase/admin";
 
 /**
