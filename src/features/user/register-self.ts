@@ -2,7 +2,8 @@
 import { collectionKeys, googleLoginAllowedDomain } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { Role } from "@/entities/role";
-import { type Self, UserInfo } from "@/entities/self";
+import { schemaVersion } from "@/entities/v1/schema-version";
+import { type Self, UserInfo } from "@/entities/v1/self";
 import v from "@/entities/valibot";
 import { adminFirestore } from "@/firebase/admin";
 import { getDepartmentById } from "./get-department-by-id";
@@ -29,18 +30,24 @@ export async function registerSelf(
     throw new NotAllowedEmailDomainError();
   }
 
-  const department = await getDepartmentById(userInfo.departmentId);
+  const department = await getDepartmentById(userInfo.department.id);
   if (!department) return null; // 部署が存在しない場合は null を返す （通常はクライアントサイドで弾かれるはず）
 
   // Users コレクションに情報を登録する
+  const userData = {
+    ...userInfo,
+    _schemaVersion: schemaVersion.literal,
+  };
+
   await adminFirestore
     .collection(collectionKeys.users)
     .doc(selfLoginStatus.self.uid)
-    .set(userInfo);
+    .set(userData);
 
   return {
     ...selfLoginStatus.self,
-    ...userInfo,
+    ...userData,
+    id: selfLoginStatus.self.uid,
   };
 }
 

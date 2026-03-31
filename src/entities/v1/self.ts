@@ -35,7 +35,7 @@ export type UserInfo = v.InferOutput<typeof UserInfo>;
 
 export const User = v.object({
   _schemaVersion: schemaVersion,
-  uid: AuthSelf.entries.uid,
+  id: AuthSelf.entries.uid,
   ...UserInfo.entries,
 });
 export type User = v.InferOutput<typeof User>;
