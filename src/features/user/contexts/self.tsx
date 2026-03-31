@@ -1,6 +1,6 @@
 "use client";
 import { createContext, type PropsWithChildren } from "react";
-import type { Self } from "@/entities/self";
+import type { Self } from "@/entities/v1/self";
 
 type SelfContextType = Self | null;
 

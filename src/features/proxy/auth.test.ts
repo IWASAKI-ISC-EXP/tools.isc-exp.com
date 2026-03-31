@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { urls } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { Role } from "@/entities/role";
-import type { AuthSelf, Self } from "@/entities/self";
+import type { AuthSelf, Self } from "@/entities/v1/self";
 import { authProxy } from "@/features/proxy/auth";
 import { createMockAuthSelf, createMockSelf } from "../../../mocks/auth";
 import { createMockReqWithPathname } from "../../../mocks/next";

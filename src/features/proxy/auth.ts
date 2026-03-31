@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { urls } from "@/constants";
 import { LoginStatus } from "@/entities/login";
 import { hasEnoughRole, Role } from "@/entities/role";
-import type { getSelfLoginStatus } from "../user/get-self-login-status";
+import type { getSelfLoginStatus } from "@/features/user/v1/get-self-login-status";
 
 export function authProxy(
   req: NextRequest,
