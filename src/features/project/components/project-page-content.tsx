@@ -10,11 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Project, ProjectStatus } from "@/entities/project";
 import { RequestStatus } from "@/entities/request";
+import { type Project, ProjectStatus } from "@/entities/v1/project";
 import { AddProjectForm } from "@/features/project/components/add-project-form";
 import { useRequests } from "@/features/request/queries/use-requests";
-import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import { useProjectsQuery } from "../queries/use-projects-query";
 import { UpdateProjectForm } from "./update-project-form";
 
@@ -34,13 +33,13 @@ export function ProjectPageContent() {
     ?.filter((request) => {
       if (request.status !== RequestStatus.Paid) return false;
       const project = projects?.find(
-        (project) => project.id === request.projectId,
+        (project) => project.id === request.project.id,
       );
       return project?.status === ProjectStatus.Exp;
     })
     .reduce((acc, request) => {
       const project = projects?.find(
-        (project) => project.id === request.projectId,
+        (project) => project.id === request.project.id,
       );
       return acc + (project ? project.expense : 0);
     }, 0);
@@ -152,8 +151,6 @@ function StatusCard({ title, count, label, skeleton }: StatusCardProps) {
 }
 
 function ProjectsTableRow({ project }: { project: Project }) {
-  const { data: user } = useUserByIdQuery(project.createdBy);
-
   return (
     <TableRow key={project.id}>
       <TableCell className="py-4">{project.name}</TableCell>
@@ -169,9 +166,7 @@ function ProjectsTableRow({ project }: { project: Project }) {
           {project.status === ProjectStatus.External ? "外部案件" : "EXP."}
         </Badge>
       </TableCell>
-      <TableCell className="py-4">
-        {user ? user.name : <Skeleton className="w-full py-4" />}
-      </TableCell>
+      <TableCell className="py-4">{project.createdBy.name}</TableCell>
       <TableCell className="py-4">
         {project.createdAt.toLocaleDateString("ja-JP")}
       </TableCell>

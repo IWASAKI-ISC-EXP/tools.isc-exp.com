@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/constants";
-import { updateProjectById } from "../update-project";
+import { updateProjectById } from "../v1/update-project";
 
 /**
  * 案件情報を更新する Mutation

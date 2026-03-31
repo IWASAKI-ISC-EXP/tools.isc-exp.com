@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/constants";
-import { getRequests } from "../get-requests";
+import { getRequests } from "../v1/get-requests";
 
 export function useRequests() {
   return useQuery({
