@@ -17,12 +17,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RequestStatus } from "@/entities/request";
-import type { RequestWithProject } from "../hooks/use-me-request-table";
+import type { Request } from "@/entities/v1/request";
 import { MeRequestsDeleteDialog } from "./me-requests-delete-dialog";
 import { RequestStatusBadge } from "./request-status-badge";
 
 type Props = {
-  data: RequestWithProject[];
+  data: Request[];
   loading?: boolean;
   onDelete: (id: string) => void;
   isDeleting?: boolean;
@@ -104,7 +104,7 @@ export function MeRequestsTable({
 
                   <TableCell className="py-4 font-medium">
                     <LoadingCell
-                      value={row.projectName}
+                      value={row.project.name}
                       skeleton={<Skeleton className="h-5 w-32" />}
                       render={(v) => v}
                     />
@@ -124,7 +124,7 @@ export function MeRequestsTable({
 
                   <TableCell className="whitespace-nowrap py-4">
                     <LoadingCell
-                      value={row.expense}
+                      value={row.project.expense}
                       skeleton={<Skeleton className="ml-auto h-5 w-20" />}
                       render={(v) => <p>¥{v.toLocaleString()}</p>}
                     />
@@ -183,7 +183,7 @@ export function MeRequestsTable({
         loading={isDeleting}
         label={
           targetRow
-            ? `「${targetRow.projectName}」を削除しますか？削除後は元に戻せません。`
+            ? `「${targetRow.project.name}」を削除しますか？削除後は元に戻せません。`
             : undefined
         }
         onConfirm={() => {

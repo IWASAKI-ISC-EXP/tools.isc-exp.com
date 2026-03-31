@@ -2,12 +2,12 @@
 import { cache } from "react";
 
 import { collectionKeys } from "@/constants";
-import type { Project } from "@/entities/v1/project"; // 変更箇所
-import { ProjectWithTimestampTransformer } from "@/entities/v1/project.server"; // 変更箇所
+import type { Project } from "@/entities/v1/project";
+import { ProjectWithTimestampTransformer } from "@/entities/v1/project.server";
 import v from "@/entities/valibot";
 import { UnauthorizedError } from "@/errors/auth";
 import { adminFirestore } from "@/firebase/admin";
-import { getAuthSelf } from "../../user/v1/get-self"; // 変更箇所
+import { getAuthSelf } from "../../user/v1/get-self";
 
 /**
  * 存在するすべての案件情報を取得

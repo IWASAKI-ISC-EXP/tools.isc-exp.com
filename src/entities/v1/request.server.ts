@@ -1,7 +1,10 @@
 import "server-only";
 import { firestore } from "firebase-admin";
 import v from "@/entities/valibot";
-import { ProjectWithTimestamp } from "./project.server";
+import {
+  ProjectWithTimestamp,
+  ProjectWithTimestampTransformer,
+} from "./project.server";
 import { Request } from "./request";
 
 export const RequestWithTimestamp = v.object({
@@ -21,7 +24,7 @@ export const RequestWithTimestampTransformer = v.pipe(
   RequestWithTimestamp,
   v.transform((r) => ({
     ...r,
-    project: { ...r.project, createdAt: r.project.createdAt.toDate() },
+    project: v.parse(ProjectWithTimestampTransformer, r.project),
     date: r.date.toDate(),
     createdAt: r.createdAt.toDate(),
   })),

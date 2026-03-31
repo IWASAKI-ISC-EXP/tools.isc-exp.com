@@ -1,11 +1,11 @@
 "use server";
 
 import { collectionKeys } from "@/constants";
-import type { Request } from "@/entities/request";
-import { RequestWithTimestampTransformer } from "@/entities/request.server";
+import type { Request } from "@/entities/v1/request";
+import { RequestWithTimestampTransformer } from "@/entities/v1/request.server";
 import v from "@/entities/valibot";
 import { UnauthorizedError } from "@/errors/auth";
-import { getSelf } from "@/features/user/get-self";
+import { getSelf } from "@/features/user/v1/get-self";
 import { adminFirestore } from "@/firebase/admin";
 
 /**
@@ -20,7 +20,7 @@ export async function getMyRequests(): Promise<Request[]> {
 
   const snapshot = await adminFirestore
     .collection(collectionKeys.requests)
-    .where("requestedBy", "==", self.uid)
+    .where("requestedBy.id", "==", self.uid)
     .get();
 
   return snapshot.docs.map((doc) =>
