@@ -8,10 +8,12 @@ import {
   ProjectWithTimestampTransformer,
 } from "@/entities/project.server";
 import { hasEnoughRole, Role } from "@/entities/role";
+import { schemaVersion } from "@/entities/schema-version";
+import { User } from "@/entities/self";
 import v from "@/entities/valibot";
 import { ForbiddenError, UnauthorizedError } from "@/errors/auth";
+import { getSelf } from "@/features/user/get-self";
 import { adminFirestore } from "@/firebase/admin";
-import { getSelf } from "../user/get-self";
 
 const minimumRole = Role.Leader;
 /**
@@ -21,7 +23,10 @@ const minimumRole = Role.Leader;
  * @returns
  */
 export async function createProject(
-  unsafeProject: Omit<Project, "id" | "createdAt" | "createdBy">,
+  unsafeProject: Omit<
+    Project,
+    "_schemaVersion" | "id" | "createdAt" | "createdBy"
+  >,
 ): Promise<Project> {
   const self = await getSelf();
 
@@ -30,8 +35,9 @@ export async function createProject(
 
   const safeProject = v.parse(v.omit(ProjectWithTimestamp, ["id"]), {
     ...unsafeProject,
+    _schemaVersion: schemaVersion.literal,
     createdAt: firestore.Timestamp.now(),
-    createdBy: self.uid,
+    createdBy: v.parse(User, self),
   });
 
   const createdDocRef = await adminFirestore

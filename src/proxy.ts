@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
-import { authProxy } from "./features/proxy/auth";
-import { getSelfLoginStatus } from "./features/user/get-self-login-status";
+import { authProxy } from "@/features/proxy/auth";
+import { getSelfLoginStatus } from "@/features/user/get-self-login-status";
 
 export const config = {
   matcher: ["/((?!_next|favicon.ico).*)"],

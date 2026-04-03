@@ -1,6 +1,6 @@
 import { Check, Clock, DollarSign, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { RequestFilterStatus } from "./request-status-tab";
+import type { RequestFilterStatus } from "../hooks/use-request-filter-status";
 
 type Props = {
   status: Exclude<RequestFilterStatus, "all">;

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { urls } from "@/constants";
-import { DepartmentId, EnrollmentYear, Name } from "@/entities/self";
+import { EnrollmentYear, Name } from "@/entities/self";
 import { useDepartmentsQuery } from "@/features/user/queries/use-departments-query";
 import { registerSelf } from "@/features/user/register-self";
 import { useFormValue } from "@/hooks/useFormValue";
@@ -34,10 +34,7 @@ export function OnboardingForm() {
   const { data: departments = [], isPending } = useDepartmentsQuery();
   const [name, setName, nameError] = useFormValue("", Name);
   const [enrollmentYear, setYear, yearError] = useFormValue(0, EnrollmentYear);
-  const [departmentId, setDepartment, departmentError] = useFormValue(
-    "",
-    DepartmentId,
-  );
+  const [departmentId, setDepartmentId] = useState<string>("");
 
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -49,7 +46,8 @@ export function OnboardingForm() {
     await registerSelf({
       name,
       enrollmentYear,
-      departmentId,
+      // biome-ignore lint/style/noNonNullAssertion: undefined になり得ない
+      department: departments.find((dept) => dept.id === departmentId)!,
     });
     window.location.href = urls.home;
   }
@@ -108,7 +106,7 @@ export function OnboardingForm() {
               ) : (
                 <Select
                   value={departmentId}
-                  onValueChange={(v) => setDepartment(v)}
+                  onValueChange={(v) => setDepartmentId(v)}
                   disabled={isPending}
                 >
                   <SelectTrigger className="w-full bg-gray-100">

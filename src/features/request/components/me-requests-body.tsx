@@ -12,23 +12,24 @@ export function MeRequestsBody() {
     status,
     setStatus,
     data,
-    allData,
+    requests,
     isLoading,
     isDeleting,
     deleteRequest,
   } = useMeRequestTable();
 
   const counts: Record<RequestFilterStatus, number> = {
-    all: allData.length,
-    [RequestStatus.Pending]: allData.filter(
+    all: requests.length,
+    [RequestStatus.Pending]: requests.filter(
       (d) => d.status === RequestStatus.Pending,
     ).length,
-    [RequestStatus.Approved]: allData.filter(
+    [RequestStatus.Approved]: requests.filter(
       (d) => d.status === RequestStatus.Approved,
     ).length,
-    [RequestStatus.Paid]: allData.filter((d) => d.status === RequestStatus.Paid)
-      .length,
-    [RequestStatus.Rejected]: allData.filter(
+    [RequestStatus.Paid]: requests.filter(
+      (d) => d.status === RequestStatus.Paid,
+    ).length,
+    [RequestStatus.Rejected]: requests.filter(
       (d) => d.status === RequestStatus.Rejected,
     ).length,
   };

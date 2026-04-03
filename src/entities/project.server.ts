@@ -15,8 +15,5 @@ export const ProjectWithTimestamp = v.object({
 
 export const ProjectWithTimestampTransformer = v.pipe(
   ProjectWithTimestamp,
-  v.transform((p) => ({
-    ...p,
-    createdAt: p.createdAt.toDate(),
-  })),
+  v.transform((p) => ({ ...p, createdAt: p.createdAt.toDate() })),
 );

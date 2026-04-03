@@ -23,5 +23,5 @@ export async function getUsers(): Promise<User[]> {
   const doc = await adminFirestore.collection(collectionKeys.users).get();
   if (doc.empty) return [];
 
-  return doc.docs.map((doc) => v.parse(User, { uid: doc.id, ...doc.data() }));
+  return doc.docs.map((doc) => v.parse(User, { ...doc.data(), id: doc.id }));
 }

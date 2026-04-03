@@ -20,7 +20,7 @@ export async function getMyRequests(): Promise<Request[]> {
 
   const snapshot = await adminFirestore
     .collection(collectionKeys.requests)
-    .where("requestedBy", "==", self.uid)
+    .where("requestedBy.id", "==", self.uid)
     .get();
 
   return snapshot.docs.map((doc) =>

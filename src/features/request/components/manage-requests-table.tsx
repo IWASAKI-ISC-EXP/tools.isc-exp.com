@@ -14,10 +14,8 @@ import {
 } from "@/components/ui/table";
 import { type Request, RequestStatus } from "@/entities/request";
 import { hasEnoughRole, Role } from "@/entities/role";
-import { useProjectByIdQuery } from "@/features/project/queries/use-project-by-id-query";
 import { useUpdateRequestStatusByIdMutation } from "@/features/request/mutations/use-update-request-status-by-id-mutation";
 import { useSelf } from "@/features/user/hooks/use-self";
-import { useUserByIdQuery } from "@/features/user/queries/use-user-by-id-query";
 import {
   type RequestFilterStatus,
   useRequestFilterStatus,
@@ -173,10 +171,13 @@ export function ManageRequestsTable() {
       0,
   };
 
-  const filteredData =
+  const filteredData = (
     selectedStatus === "all"
       ? mergedData
-      : mergedData?.filter((r) => r.status === selectedStatus);
+      : mergedData?.filter((r) => r.status === selectedStatus)
+  )?.filter((r) =>
+    r.requestedBy.name.toLowerCase().includes(keyword.toLowerCase()),
+  );
 
   return (
     <div className="w-full space-y-4">
@@ -254,7 +255,6 @@ export function ManageRequestsTable() {
             ) : (
               filteredData?.map((r) => (
                 <RequestRow
-                  keyword={keyword}
                   key={r.id}
                   r={r}
                   onOptimisticUpdate={handleOptimisticUpdate}
@@ -270,19 +270,10 @@ export function ManageRequestsTable() {
 
 type RequestRowProps = {
   r: Request;
-  keyword: string;
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 };
 
-function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
-  const { data: project, isLoading: isProjectLoading } = useProjectByIdQuery(
-    r.projectId,
-  );
-
-  const { data: user, isLoading: isUserLoading } = useUserByIdQuery(
-    r.requestedBy,
-  );
-
+function RequestRow({ r, onOptimisticUpdate }: RequestRowProps) {
   const formatDateJP = (date: Date) =>
     date.toLocaleDateString("ja-JP", {
       year: "numeric",
@@ -290,71 +281,35 @@ function RequestRow({ r, keyword, onOptimisticUpdate }: RequestRowProps) {
       day: "numeric",
     });
 
-  const isRowLoading = isUserLoading || isProjectLoading;
-
-  if (user && !user.name.includes(keyword)) {
-    return null;
-  }
-
   return (
     <TableRow>
       <TableCell>
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-20" />
-        ) : (
-          <RequestStatusBadge status={r.status} />
-        )}
+        <RequestStatusBadge status={r.status} />
       </TableCell>
 
-      <TableCell>
-        {isRowLoading ? <Skeleton className="h-6 w-24" /> : user?.name}
-      </TableCell>
+      <TableCell>{r.requestedBy.name}</TableCell>
 
-      <TableCell className="whitespace-pre-line">
-        {isRowLoading ? <Skeleton className="h-6 w-32" /> : project?.name}
-      </TableCell>
+      <TableCell className="whitespace-pre-line">{r.project.name}</TableCell>
 
-      <TableCell>
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-28" />
-        ) : (
-          formatDateJP(r.date)
-        )}
-      </TableCell>
+      <TableCell>{formatDateJP(r.date)}</TableCell>
 
-      <TableCell>
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-28" />
-        ) : (
-          formatDateJP(r.createdAt)
-        )}
-      </TableCell>
+      <TableCell>{formatDateJP(r.createdAt)}</TableCell>
 
-      <TableCell>
-        {isRowLoading ? (
-          <Skeleton className="h-6 w-20" />
-        ) : (
-          `${project?.expense?.toLocaleString()}円`
-        )}
-      </TableCell>
+      <TableCell>{`${r.project.expense.toLocaleString()}円`}</TableCell>
 
       <TableCell className="whitespace-pre-line text-gray-600 text-sm">
-        {isRowLoading ? <Skeleton className="h-6 w-40" /> : r.memo}
+        {r.memo}
       </TableCell>
 
       <TableCell>
-        {isRowLoading ? (
-          <Skeleton className="h-8 w-24" />
-        ) : (
-          <ActionButtons
-            requestId={r.id}
-            status={r.status}
-            requesterName={user?.name || ""}
-            projectName={project?.name || ""}
-            projectExpense={project?.expense}
-            onOptimisticUpdate={onOptimisticUpdate}
-          />
-        )}
+        <ActionButtons
+          requestId={r.id}
+          status={r.status}
+          requesterName={r.requestedBy.name}
+          projectName={r.project.name}
+          projectExpense={r.project.expense}
+          onOptimisticUpdate={onOptimisticUpdate}
+        />
       </TableCell>
     </TableRow>
   );
