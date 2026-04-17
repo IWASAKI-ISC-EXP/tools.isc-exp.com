@@ -1,6 +1,5 @@
 "use client";
 
-import { Save, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,6 +41,12 @@ function ActionButtons({
   projectExpense?: number;
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 }) {
+  const RequestConfirmSummary = {
+    projectName: projectName || "",
+    requesterName,
+    projectExpense: projectExpense || 0,
+  };
+
   const { mutate } = useUpdateRequestStatusByIdMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -74,35 +79,19 @@ function ActionButtons({
     return (
       <div className="flex justify-end gap-2">
         <RequestStatusChangeConfirmDialog
-          projectName={projectName || ""}
-          requesterName={requesterName}
-          projectExpense={projectExpense || 0}
+          Summary={RequestConfirmSummary}
           isSubmitting={isSubmitting}
           canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
-          targetRequestStatus={RequestStatus.Rejected}
-          buttonIcon={<Trash2 className="mr-2 h-4 w-4" />}
-          buttonText="却下"
-          buttonClassName="text-red-600 bg-white hover:text-red-700"
-          dialogTitle="却下確認"
-          dialogDescription="申請を却下します。よろしいですか？"
-          confirmButtonClassName="bg-red-600 text-white hover:bg-red-700 hover:text-white px-6"
+          actionVariant="reject"
         />
 
         <RequestStatusChangeConfirmDialog
-          projectName={projectName || ""}
-          requesterName={requesterName}
-          projectExpense={projectExpense || 0}
+          Summary={RequestConfirmSummary}
           isSubmitting={isSubmitting}
           canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
-          targetRequestStatus={RequestStatus.Approved}
-          buttonIcon={<Save className="mr-2 h-4 w-4" />}
-          buttonText="承認"
-          buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-          dialogTitle="承認確認"
-          dialogDescription="申請を承認します。よろしいですか？"
-          confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+          actionVariant="approve"
         />
       </div>
     );
@@ -111,19 +100,11 @@ function ActionButtons({
   if (status === RequestStatus.Approved) {
     return (
       <RequestStatusChangeConfirmDialog
-        projectName={projectName || ""}
-        requesterName={requesterName}
-        projectExpense={projectExpense || 0}
+        Summary={RequestConfirmSummary}
         isSubmitting={isSubmitting}
         canManageRequests={isTeacher}
         handleUpdate={handleUpdate}
-        targetRequestStatus={RequestStatus.Paid}
-        buttonIcon={<Save className="mr-2 h-4 w-4" />}
-        buttonText="精算"
-        buttonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white"
-        dialogTitle="精算確認"
-        dialogDescription="交通費を精算します。よろしいですか？"
-        confirmButtonClassName="bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6"
+        actionVariant="paid"
       />
     );
   }

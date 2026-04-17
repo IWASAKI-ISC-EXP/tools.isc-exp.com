@@ -1,4 +1,4 @@
-import { CircleAlert } from "lucide-react";
+import { CircleAlert, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,48 +11,91 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import type { RequestStatus } from "@/entities/request";
+import { RequestStatus } from "@/entities/request";
 
-type RequestStatusChangeConfirmDialogProps = {
+type RequestConfirmSummary = {
   projectName: string;
   requesterName: string;
   projectExpense: number;
+};
+
+type ActionVariant = "approve" | "reject" | "paid";
+
+const primaryTriggerClass =
+  "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white";
+
+const primaryConfirmClass =
+  "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white px-6";
+
+const triggerClassByVariant: Record<ActionVariant, string> = {
+  approve: primaryTriggerClass,
+  reject: "text-red-600 bg-white hover:text-red-700",
+  paid: primaryTriggerClass,
+};
+
+const confirmClassByVariant: Record<ActionVariant, string> = {
+  approve: primaryConfirmClass,
+  reject: "bg-red-600 text-white hover:bg-red-700 hover:text-white px-6",
+  paid: primaryConfirmClass,
+};
+
+const actionConfigByVariant: Record<
+  ActionVariant,
+  {
+    buttonText: string;
+    buttonIcon: React.ReactNode;
+    dialogTitle: string;
+    dialogDescription: string;
+    targetRequestStatus: RequestStatus;
+  }
+> = {
+  approve: {
+    buttonText: "承認",
+    buttonIcon: <Save className="mr-2 h-4 w-4" />,
+    dialogTitle: "承認確認",
+    dialogDescription: "申請を承認します。よろしいですか？",
+    targetRequestStatus: RequestStatus.Approved,
+  },
+  reject: {
+    buttonText: "却下",
+    buttonIcon: <Trash2 className="mr-2 h-4 w-4" />,
+    dialogTitle: "却下確認",
+    dialogDescription: "申請を却下します。よろしいですか？",
+    targetRequestStatus: RequestStatus.Rejected,
+  },
+  paid: {
+    buttonText: "精算",
+    buttonIcon: <Save className="mr-2 h-4 w-4" />,
+    dialogTitle: "精算確認",
+    dialogDescription: "交通費を精算します。よろしいですか？",
+    targetRequestStatus: RequestStatus.Paid,
+  },
+};
+
+type RequestStatusChangeConfirmDialogProps = {
+  Summary: RequestConfirmSummary;
   isSubmitting: boolean;
   canManageRequests: boolean;
   handleUpdate: (requestStatus: RequestStatus) => void;
-  targetRequestStatus: RequestStatus;
-  buttonText: string;
-  buttonIcon: React.ReactNode;
-  dialogTitle: string;
-  dialogDescription: string;
-  buttonClassName: string;
-  confirmButtonClassName: string;
+  actionVariant: ActionVariant;
 };
 
 export function RequestStatusChangeConfirmDialog({
-  projectName,
-  requesterName,
-  projectExpense,
+  Summary,
   isSubmitting,
   canManageRequests,
   handleUpdate,
-  targetRequestStatus,
-  buttonText,
-  buttonIcon,
-  dialogTitle,
-  dialogDescription,
-  buttonClassName,
-  confirmButtonClassName,
+  actionVariant,
 }: RequestStatusChangeConfirmDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className={buttonClassName}
+          className={triggerClassByVariant[actionVariant]}
           disabled={isSubmitting || !canManageRequests}
           variant={"outline"}
         >
-          {buttonText}
+          {actionConfigByVariant[actionVariant].buttonText}
         </Button>
       </DialogTrigger>
 
@@ -66,10 +109,12 @@ export function RequestStatusChangeConfirmDialog({
             <CircleAlert className="mt-1 h-10 w-10" />
             <div>
               <DialogTitle className="font-semibold text-lg">
-                {dialogTitle}
+                {actionConfigByVariant[actionVariant].dialogTitle}
               </DialogTitle>
 
-              <DialogDescription>{dialogDescription}</DialogDescription>
+              <DialogDescription>
+                {actionConfigByVariant[actionVariant].dialogDescription}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -80,21 +125,21 @@ export function RequestStatusChangeConfirmDialog({
                 <TableCell className="w-32 font-medium text-gray-600">
                   案件名
                 </TableCell>
-                <TableCell>{projectName}</TableCell>
+                <TableCell>{Summary.projectName}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell className="font-medium text-gray-600">
                   申請者
                 </TableCell>
-                <TableCell>{requesterName}</TableCell>
+                <TableCell>{Summary.requesterName}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell className="font-medium text-gray-600">
                   金額
                 </TableCell>
-                <TableCell>{projectExpense} 円</TableCell>
+                <TableCell>{Summary.projectExpense} 円</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -113,13 +158,15 @@ export function RequestStatusChangeConfirmDialog({
           <Button
             variant="outline"
             onClick={() => {
-              handleUpdate(targetRequestStatus);
+              handleUpdate(
+                actionConfigByVariant[actionVariant].targetRequestStatus,
+              );
             }}
             disabled={isSubmitting || !canManageRequests}
-            className={confirmButtonClassName}
+            className={confirmClassByVariant[actionVariant]}
           >
-            {buttonIcon}
-            {buttonText}
+            {actionConfigByVariant[actionVariant].buttonIcon}
+            {actionConfigByVariant[actionVariant].buttonText}
           </Button>
         </DialogFooter>
       </DialogContent>
