@@ -41,7 +41,7 @@ function ActionButtons({
   projectExpense?: number;
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 }) {
-  const RequestConfirmSummary = {
+  const requestConfirmSummary = {
     projectName: projectName || "",
     requesterName,
     projectExpense: projectExpense || 0,
@@ -79,19 +79,19 @@ function ActionButtons({
     return (
       <div className="flex justify-end gap-2">
         <RequestStatusChangeConfirmDialog
-          Summary={RequestConfirmSummary}
+          summary={requestConfirmSummary}
           isSubmitting={isSubmitting}
           canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
-          actionVariant="reject"
+          variant="reject"
         />
 
         <RequestStatusChangeConfirmDialog
-          Summary={RequestConfirmSummary}
+          summary={requestConfirmSummary}
           isSubmitting={isSubmitting}
           canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
-          actionVariant="approve"
+          variant="approve"
         />
       </div>
     );
@@ -100,11 +100,11 @@ function ActionButtons({
   if (status === RequestStatus.Approved) {
     return (
       <RequestStatusChangeConfirmDialog
-        Summary={RequestConfirmSummary}
+        summary={requestConfirmSummary}
         isSubmitting={isSubmitting}
         canManageRequests={isTeacher}
         handleUpdate={handleUpdate}
-        actionVariant="paid"
+        variant="paid"
       />
     );
   }

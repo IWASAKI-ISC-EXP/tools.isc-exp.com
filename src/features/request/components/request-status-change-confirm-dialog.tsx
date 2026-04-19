@@ -39,7 +39,7 @@ const confirmClassByVariant: Record<ActionVariant, string> = {
   paid: primaryConfirmClass,
 };
 
-const actionConfigByVariant: Record<
+const ActionConfigByVariant: Record<
   ActionVariant,
   {
     buttonText: string;
@@ -73,29 +73,29 @@ const actionConfigByVariant: Record<
 };
 
 type RequestStatusChangeConfirmDialogProps = {
-  Summary: RequestConfirmSummary;
+  summary: RequestConfirmSummary;
   isSubmitting: boolean;
   canManageRequests: boolean;
   handleUpdate: (requestStatus: RequestStatus) => void;
-  actionVariant: ActionVariant;
+  variant: ActionVariant;
 };
 
 export function RequestStatusChangeConfirmDialog({
-  Summary,
+  summary,
   isSubmitting,
   canManageRequests,
   handleUpdate,
-  actionVariant,
+  variant,
 }: RequestStatusChangeConfirmDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className={triggerClassByVariant[actionVariant]}
+          className={triggerClassByVariant[variant]}
           disabled={isSubmitting || !canManageRequests}
           variant={"outline"}
         >
-          {actionConfigByVariant[actionVariant].buttonText}
+          {ActionConfigByVariant[variant].buttonText}
         </Button>
       </DialogTrigger>
 
@@ -109,11 +109,11 @@ export function RequestStatusChangeConfirmDialog({
             <CircleAlert className="mt-1 h-10 w-10" />
             <div>
               <DialogTitle className="font-semibold text-lg">
-                {actionConfigByVariant[actionVariant].dialogTitle}
+                {ActionConfigByVariant[variant].dialogTitle}
               </DialogTitle>
 
               <DialogDescription>
-                {actionConfigByVariant[actionVariant].dialogDescription}
+                {ActionConfigByVariant[variant].dialogDescription}
               </DialogDescription>
             </div>
           </div>
@@ -125,21 +125,21 @@ export function RequestStatusChangeConfirmDialog({
                 <TableCell className="w-32 font-medium text-gray-600">
                   案件名
                 </TableCell>
-                <TableCell>{Summary.projectName}</TableCell>
+                <TableCell>{summary.projectName}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell className="font-medium text-gray-600">
                   申請者
                 </TableCell>
-                <TableCell>{Summary.requesterName}</TableCell>
+                <TableCell>{summary.requesterName}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell className="font-medium text-gray-600">
                   金額
                 </TableCell>
-                <TableCell>{Summary.projectExpense} 円</TableCell>
+                <TableCell>{summary.projectExpense} 円</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -158,15 +158,13 @@ export function RequestStatusChangeConfirmDialog({
           <Button
             variant="outline"
             onClick={() => {
-              handleUpdate(
-                actionConfigByVariant[actionVariant].targetRequestStatus,
-              );
+              handleUpdate(ActionConfigByVariant[variant].targetRequestStatus);
             }}
             disabled={isSubmitting || !canManageRequests}
-            className={confirmClassByVariant[actionVariant]}
+            className={confirmClassByVariant[variant]}
           >
-            {actionConfigByVariant[actionVariant].buttonIcon}
-            {actionConfigByVariant[actionVariant].buttonText}
+            {ActionConfigByVariant[variant].buttonIcon}
+            {ActionConfigByVariant[variant].buttonText}
           </Button>
         </DialogFooter>
       </DialogContent>
