@@ -41,12 +41,6 @@ function ActionButtons({
   projectExpense?: number;
   onOptimisticUpdate: (requestId: string, nextStatus: RequestStatus) => void;
 }) {
-  const requestConfirmSummary = {
-    projectName: projectName || "",
-    requesterName,
-    projectExpense: projectExpense || 0,
-  };
-
   const { mutate } = useUpdateRequestStatusByIdMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -79,7 +73,9 @@ function ActionButtons({
     return (
       <div className="flex justify-end gap-2">
         <RequestStatusChangeConfirmDialog
-          summary={requestConfirmSummary}
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
           isSubmitting={isSubmitting}
           canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
@@ -87,7 +83,9 @@ function ActionButtons({
         />
 
         <RequestStatusChangeConfirmDialog
-          summary={requestConfirmSummary}
+          projectName={projectName || ""}
+          requesterName={requesterName}
+          projectExpense={projectExpense || 0}
           isSubmitting={isSubmitting}
           canManageRequests={isLeaderOrHigher}
           handleUpdate={handleUpdate}
@@ -100,7 +98,9 @@ function ActionButtons({
   if (status === RequestStatus.Approved) {
     return (
       <RequestStatusChangeConfirmDialog
-        summary={requestConfirmSummary}
+        projectName={projectName || ""}
+        requesterName={requesterName}
+        projectExpense={projectExpense || 0}
         isSubmitting={isSubmitting}
         canManageRequests={isTeacher}
         handleUpdate={handleUpdate}

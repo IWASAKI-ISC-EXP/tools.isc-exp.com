@@ -13,12 +13,6 @@ import {
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { RequestStatus } from "@/entities/request";
 
-type RequestConfirmSummary = {
-  projectName: string;
-  requesterName: string;
-  projectExpense: number;
-};
-
 type ActionVariant = "approve" | "reject" | "paid";
 
 const primaryTriggerClass =
@@ -73,7 +67,9 @@ const ActionConfigByVariant: Record<
 };
 
 type RequestStatusChangeConfirmDialogProps = {
-  summary: RequestConfirmSummary;
+  projectName: string;
+  requesterName: string;
+  projectExpense: number;
   isSubmitting: boolean;
   canManageRequests: boolean;
   handleUpdate: (requestStatus: RequestStatus) => void;
@@ -81,7 +77,9 @@ type RequestStatusChangeConfirmDialogProps = {
 };
 
 export function RequestStatusChangeConfirmDialog({
-  summary,
+  projectName,
+  requesterName,
+  projectExpense,
   isSubmitting,
   canManageRequests,
   handleUpdate,
@@ -125,21 +123,21 @@ export function RequestStatusChangeConfirmDialog({
                 <TableCell className="w-32 font-medium text-gray-600">
                   案件名
                 </TableCell>
-                <TableCell>{summary.projectName}</TableCell>
+                <TableCell>{projectName}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell className="font-medium text-gray-600">
                   申請者
                 </TableCell>
-                <TableCell>{summary.requesterName}</TableCell>
+                <TableCell>{requesterName}</TableCell>
               </TableRow>
 
               <TableRow>
                 <TableCell className="font-medium text-gray-600">
                   金額
                 </TableCell>
-                <TableCell>{summary.projectExpense} 円</TableCell>
+                <TableCell>{projectExpense} 円</TableCell>
               </TableRow>
             </TableBody>
           </Table>
